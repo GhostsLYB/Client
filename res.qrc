@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/">
+        <file>icon/1.png</file>
+        <file>icon/2.PNG</file>
+        <file>assets/ghost.db</file>
+        <file>assets/root.db</file>
+    </qresource>
+</RCC>
