@@ -72,7 +72,7 @@ void AllPageListWidget::onLoginSuccessed(QString userName)
     homepage->setIndex(0);
     homepage->setTopShow();
     sqlite->setDatabase(userName);
-    sqlite->importTxtForChatInfo();
+//    sqlite->importTxtForChatInfo();
     qDebug() << "login user:"<<userName;//登陆成功
 }
 

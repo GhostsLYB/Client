@@ -75,3 +75,15 @@ void HomePage::on_btn_exit_clicked()
     ctrl->sock->send(exit);
     emit sigExit();
 }
+
+void HomePage::on_btn_sendFile_clicked()
+{
+    filePath = QFileDialog::getOpenFileName(this,"open file","","*");
+//    QString fileName = filePath.mid(filePath.lastIndexOf('/') + 1);
+    qDebug() << "file path : " << filePath;
+//    qDebug() << "file name : " << fileName;
+    QTcpSocket * fileSocket = ctrl->createSocket();
+    connect(fileSocket, &QTcpSocket::connected, this,[&](){
+        ctrl->sendFile(fileSocket, filePath);
+    });
+}

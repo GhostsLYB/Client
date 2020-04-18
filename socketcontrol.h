@@ -11,6 +11,7 @@ class SocketControl : public QObject
     Q_OBJECT
 public:
     explicit SocketControl(QObject *parent = nullptr);
+    QTcpSocket *createSocket();
 
 signals:
     void sigRegisterResponse(bool);

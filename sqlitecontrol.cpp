@@ -59,10 +59,10 @@ bool SqliteControl::isExistTable(QString table)
         }
     }
     if (ret)
-        qDebug()<<"select sqlite_master successed "<<bRet;
-    else {
-        qDebug()<<"select sqlite_master fail"<<bRet;
-    }
+//        qDebug()<<"select sqlite_master successed "<<bRet;
+//    else {
+//        qDebug()<<"select sqlite_master fail"<<bRet;
+//    }
     return bRet;
 }
 
@@ -98,10 +98,10 @@ bool SqliteControl::createTable(QString tableName)
         if(isExistTable(QString("user_friendList")))
             return false;
         createTableString = QString("CREATE TABLE user_friendList ("
-                                    "id             INTEGER     PRIMARY KEY AUTOINCREMENT,"
+                                    "id             INTEGER     PRIMARY KEY AUTOINCREMENT, "
                                     "requestUser    VARCHAR(50) NOT NULL,"
-                                    "responseUser   VARCHAR(50) NOT NULL),"
-                                    "time VARCHAR(50)");
+                                    "responseUser   VARCHAR(50) NOT NULL,"
+                                    "time           VARCHAR(50) NOT NULL)");
     }
     else if (tableName == QString("recent_chatList")) {
         if(isExistTable(QString("recent_chatList")))
@@ -311,27 +311,27 @@ QString SqliteControl::getDatabaseName()
     return databaseName;
 }
 
-bool SqliteControl::importTxtForChatInfo()
-{
-    if(!m_DataBase.isOpen())
-        return false;
-    QString sql = "LOAD DATA INFILE 'E:/always/Linux/root_chatInfo.txt' "
-                  "INTO TABLE root_chatInfo "
-                  "FIELDS "
-                  "TERMINATED BY ',' "
-                  "ENCLOSED BY '\"' "
-                  "LINES "
-                  "TERMINATED BY '\r\n'";
-    qDebug() << sql;
-    QSqlQuery query = QSqlQuery(m_DataBase);
-    bool ret = query.exec(sql);
-    if(ret)
-        qDebug() << "import successed";
-    else {
-        qDebug() << "import fail";
-    }
+//bool SqliteControl::importTxtForChatInfo()
+//{
+//    if(!m_DataBase.isOpen())
+//        return false;
+//    QString sql = "LOAD DATA INFILE 'E:/always/Linux/root_chatInfo.txt' "
+//                  "INTO TABLE root_chatInfo "
+//                  "FIELDS "
+//                  "TERMINATED BY ',' "
+//                  "ENCLOSED BY '\"' "
+//                  "LINES "
+//                  "TERMINATED BY '\r\n'";
+//    qDebug() << sql;
+//    QSqlQuery query = QSqlQuery(m_DataBase);
+//    bool ret = query.exec(sql);
+//    if(ret)
+//        qDebug() << "import successed";
+//    else {
+//        qDebug() << "import fail";
+//    }
 
-}
+//}
 
 
 

@@ -8,6 +8,14 @@ SocketControl::SocketControl(QObject *parent) : QObject(parent)
 
 }
 
+//创建一个用于发送文件的套接字
+QTcpSocket * SocketControl::createSocket()
+{
+    QTcpSocket * sock = new QTcpSocket();
+    sock->connectToHost("39.105.105.251", 5188);
+    return sock;
+}
+
 bool SocketControl::isconnected(){
     if(clientSocket->state() == QTcpSocket::ConnectedState)
         return true;

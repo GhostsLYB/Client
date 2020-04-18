@@ -43,7 +43,7 @@ public:
     void closeDatabase(){m_DataBase.close();}
     bool isExistTable(QString table);
     QString getDatabaseName();
-    bool importTxtForChatInfo();
+//    bool importTxtForChatInfo();
 private:
     QSqlDatabase m_DataBase;
 private:

@@ -5,6 +5,7 @@
 #include <QMap>
 #include <QFile>
 #include <QDir>
+#include <QFileInfo>
 #include "socketcontrol.h"
 
 class Control : public QObject
@@ -12,6 +13,8 @@ class Control : public QObject
     Q_OBJECT
 public:
     explicit Control(QObject *parent = nullptr);
+    QTcpSocket * createSocket();
+    void sendFile(QTcpSocket*, QString);
     SocketControl * sock;
 signals:
     void sigRegisterResponse(bool);
