@@ -82,8 +82,20 @@ void HomePage::on_btn_sendFile_clicked()
 //    QString fileName = filePath.mid(filePath.lastIndexOf('/') + 1);
     qDebug() << "file path : " << filePath;
 //    qDebug() << "file name : " << fileName;
-    QTcpSocket * fileSocket = ctrl->createSocket();
+//    QTcpSocket * fileSocket = ctrl->createSocket();
+    static QTcpSocket * fileSocket;
+    fileSocket = nullptr;
+    fileSocket = new QTcpSocket();
+    fileSocket->connectToHost("39.105.105.251", 5188);
     connect(fileSocket, &QTcpSocket::connected, this,[&](){
-        ctrl->sendFile(fileSocket, filePath);
+        if(fileSocket->isWritable())
+            qDebug() << "sock writable";
+        if(fileSocket->isOpen())
+            qDebug() << "sock opened";
+        if(fileSocket->isValid())
+            qDebug() << "sock Valid";
+//        qint64 len = (fileSocket)->write(QString("  22   2   4root   6123456").toUtf8());
+//        qDebug() << " send len = " << len;
+        ctrl->sendFile(&fileSocket, filePath);
     });
 }

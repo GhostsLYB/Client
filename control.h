@@ -14,7 +14,7 @@ class Control : public QObject
 public:
     explicit Control(QObject *parent = nullptr);
     QTcpSocket * createSocket();
-    void sendFile(QTcpSocket*, QString);
+    void sendFile(QTcpSocket**, QString);
     SocketControl * sock;
 signals:
     void sigRegisterResponse(bool);

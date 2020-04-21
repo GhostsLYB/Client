@@ -18,7 +18,7 @@ QTcpSocket * Control::createSocket()
     return sock->createSocket();
 }
 
-void Control::sendFile(QTcpSocket * sock, QString filePath)
+void Control::sendFile(QTcpSocket ** sock, QString filePath)
 {
     //        /*发送文件的格式 总长度+类型+文件名长+文件名+分段编号+最大编号+数据段长度+数据段
     //         *           [  4 ]+[ 4]+[  4   ]+[ *  ]+[  8位 ]+[  8位 ]+[   4位  ]+[ *  ]*/
@@ -27,41 +27,44 @@ void Control::sendFile(QTcpSocket * sock, QString filePath)
     qint64  fileSize = info.size();
     int     maxNum   = fileSize / SENDSIZE + 1;
     int     currNum  = 1;
-    QFile file(filePath);
-    if(!file.open(QFile::ReadOnly))
+    QFile file(filePath, this);
+    if(!file.open(QIODevice::ReadOnly))
     {
         qDebug() << "open file" << filePath << "fail";
     }
     QByteArray data;
     QString sendbuf = "";
     char temp[1024] = {0};
-//    sprintf(temp, "%4d", '0');
-    sendbuf.append("    ");       //总长度
-//    sprintf(temp, "%4d", '4');
-    sendbuf.append("   4");       //类型
+    sprintf(temp, "%4d", 0);
+    sendbuf.append(temp);       //总长度
+    sprintf(temp, "%4d", 4);
+    sendbuf.append(temp);       //类型
     int fileNameLen = qstrlen(fileName.toUtf8().data());
     sprintf(temp, "%4d", fileNameLen);//文件名长度
-    sendbuf.append(temp); memset(temp, 0, sizeof(temp));
+    sendbuf.append(temp);
     sendbuf.append(fileName);   //文件名
-    sprintf(temp, "%8d", 1);
-    sendbuf.append(temp);memset(temp, 0, sizeof(temp));       //分段号
-    sprintf(temp, "%8d", 7);
-    sendbuf.append(temp);memset(temp, 0, sizeof(temp));       //最大编号
+    sprintf(temp, "%8d", currNum);
+    sendbuf.append(temp);       //分段号
+    sprintf(temp, "%8d", maxNum);
+    sendbuf.append(temp);       //最大编号
+    qDebug() << "maxNum is " << maxNum;
     while(currNum <= maxNum)
     {
         QByteArray sendBta = sendbuf.toUtf8();
         int i = currNum;
         sprintf(temp, "%8d", i);
         sendBta = sendBta.replace(12 + fileNameLen, 8, temp);
-        data = file.read(SENDSIZE);
-        sprintf(temp, "%4d", qstrlen(sendBta.data()));
-        sendBta.append(temp);memset(temp, 0, sizeof(temp));   //数据长度
+        data = file.read(4096);
+        sprintf(temp, "%4d", qstrlen(data.data()));
+        sendBta.append(temp);   //数据长度
         sendBta.append(data);   //数据
         sprintf(temp, "%4d", qstrlen(sendBta.data()) - 4);
         sendBta = sendBta.replace(0, 4, temp);memset(temp, 0, sizeof(temp));//设置总长度
-        sock->write(sendBta);
+        qint64 len = (*sock)->write(sendBta);//客户端长连接套接字，应该是短链接套接字
+        qDebug() << "currNum is " << currNum << " send len = " << len;
         currNum++;
     }
+//    delete (*sock);
 }
 
 //服务器响应消息处理函数
