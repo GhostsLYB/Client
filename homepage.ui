@@ -197,7 +197,7 @@
             </property>
             <item>
              <widget class="QWidget" name="wid_mine" native="true">
-              <layout class="QGridLayout" name="gridLayout_5">
+              <layout class="QGridLayout" name="gridLayout_5" columnstretch="1,1,1,1" columnminimumwidth="0,0,0,0">
                <property name="leftMargin">
                 <number>0</number>
                </property>
@@ -213,10 +213,10 @@
                <property name="spacing">
                 <number>0</number>
                </property>
-               <item row="0" column="0">
-                <widget class="QLabel" name="label_2">
+               <item row="0" column="3">
+                <widget class="QPushButton" name="btn_recvFile">
                  <property name="text">
-                  <string>我的信息</string>
+                  <string>接收文件</string>
                  </property>
                 </widget>
                </item>
@@ -231,6 +231,19 @@
                 <widget class="QPushButton" name="btn_sendFile">
                  <property name="text">
                   <string>发送文件</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="0">
+                <widget class="QLineEdit" name="le_fileName">
+                 <property name="minimumSize">
+                  <size>
+                   <width>70</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>我的信息</string>
                  </property>
                 </widget>
                </item>

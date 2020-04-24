@@ -7,6 +7,7 @@
 #include <QDir>
 #include <QFileInfo>
 #include "socketcontrol.h"
+#include <QThread>
 
 class Control : public QObject
 {
@@ -15,6 +16,8 @@ public:
     explicit Control(QObject *parent = nullptr);
     QTcpSocket * createSocket();
     void sendFile(QTcpSocket**, QString);
+    void sendFileRequest(QTcpSocket**, QString);
+    void recvFile(QTcpSocket**);
     SocketControl * sock;
 signals:
     void sigRegisterResponse(bool);
@@ -24,9 +27,13 @@ private:
     void processResponse(int, QString&);
     bool processRegisterMsg(QString & msg);
     void processLoginMsg(QString & msg);     //msg成功是“yes”,密码不正确是“no”,不存在用户是“null”
-    void saveFileSection(QByteArray &msg);
 public slots:
     void onRead();
+private:
+    QFile * file;
+    bool isFirstRecvFile;
+    long recvFileSize;
+    long recvSize;
 };
 
 #endif // CONTROL_H

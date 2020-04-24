@@ -9,6 +9,8 @@
 #include "homepagetop.h"
 #include "control.h"
 
+#include "filesendrecv.h"
+
 namespace Ui {
 class HomePage;
 }
@@ -31,12 +33,15 @@ private slots:
     void on_btn_exit_clicked();
 
     void on_btn_sendFile_clicked();
+    void on_btn_recvFile_clicked();
+
 private:
     Ui::HomePage *ui;
     WidgetMain * wid_main = nullptr;
     WidgetFriend * wid_friend = nullptr;
     Control * ctrl = nullptr;
     QString filePath;
+    QTcpSocket * recvSendFileSocket;
 };
 
 #endif // HOMEPAGE_H

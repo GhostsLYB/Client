@@ -3,11 +3,12 @@
 #define SENDSIZE 4096   //发送数据包最大为4k
 #define BUFSIZE  4296
 
-//文件名->文件的各个分段map
-//分段号->改分段的数据
-QMap<QString, QMap<int, QByteArray> > filebuf;
-
-Control::Control(QObject *parent) : QObject(parent)
+Control::Control(QObject *parent) :
+    QObject(parent),
+    file(nullptr),
+    isFirstRecvFile(true),
+    recvFileSize(0),
+    recvSize(0)
 {
     sock = new SocketControl(this);
 }
@@ -20,13 +21,11 @@ QTcpSocket * Control::createSocket()
 
 void Control::sendFile(QTcpSocket ** sock, QString filePath)
 {
-    //        /*发送文件的格式 总长度+类型+文件名长+文件名+分段编号+最大编号+数据段长度+数据段
-    //         *           [  4 ]+[ 4]+[  4   ]+[ *  ]+[  8位 ]+[  8位 ]+[   4位  ]+[ *  ]*/
+    //发送文件的格式 总长度+类型+文件名长+文件名+文件大小
+    //            [ 4 ]+[ 4]+[  4 ]+[ * ]+[ 8位 ]
     QFileInfo info(filePath);
     QString fileName = info.fileName();
     qint64  fileSize = info.size();
-    int     maxNum   = fileSize / SENDSIZE + 1;
-    int     currNum  = 1;
     QFile file(filePath, this);
     if(!file.open(QIODevice::ReadOnly))
     {
@@ -39,34 +38,67 @@ void Control::sendFile(QTcpSocket ** sock, QString filePath)
     sendbuf.append(temp);       //总长度
     sprintf(temp, "%4d", 4);
     sendbuf.append(temp);       //类型
-    int fileNameLen = qstrlen(fileName.toUtf8().data());
+    uint fileNameLen = qstrlen(fileName.toUtf8().data());
     sprintf(temp, "%4d", fileNameLen);//文件名长度
     sendbuf.append(temp);
     sendbuf.append(fileName);   //文件名
-    sprintf(temp, "%8d", currNum);
-    sendbuf.append(temp);       //分段号
-    sprintf(temp, "%8d", maxNum);
-    sendbuf.append(temp);       //最大编号
-    qDebug() << "maxNum is " << maxNum;
-    while(currNum <= maxNum)
+    sprintf(temp, "%8lld", fileSize);
+    sendbuf.append(temp);       //文件大小
+    sprintf(temp, "%4d", qstrlen(sendbuf.toUtf8().data()) - 4);
+    QByteArray sendBta = sendbuf.toUtf8().replace(0, 4, temp);//设置信息总长度
+    (*sock)->write(sendBta);    //发送文件信息
+    QThread * currThread = QThread::currentThread();
+    currThread->msleep(50);
+    while(!file.atEnd())
     {
-        QByteArray sendBta = sendbuf.toUtf8();
-        int i = currNum;
-        sprintf(temp, "%8d", i);
-        sendBta = sendBta.replace(12 + fileNameLen, 8, temp);
         data = file.read(4096);
-        sprintf(temp, "%4d", qstrlen(data.data()));
-        sendBta.append(temp);   //数据长度
-        sendBta.append(data);   //数据
-        sprintf(temp, "%4d", qstrlen(sendBta.data()) - 4);
-        sendBta = sendBta.replace(0, 4, temp);memset(temp, 0, sizeof(temp));//设置总长度
-        qint64 len = (*sock)->write(sendBta);//客户端长连接套接字，应该是短链接套接字
-        qDebug() << "currNum is " << currNum << " send len = " << len;
-        currNum++;
+        (*sock)->write(data);//客户端长连接套接字，应该是短链接套接字
     }
 //    delete (*sock);
 }
 
+void Control::sendFileRequest(QTcpSocket ** sock, QString fileName){
+    /*msg格式 总长+类型+文件名长+文件名       文件信息格式：文件名长+文件名+文件长度
+             [4]+[ 4]+[4]+[ *  ]                  [   4  ]+[  * ]+[  8  ]*/
+    char sendbuf[100] = {0};
+    QString filePath = "E:\\always\\IM\\file\\" +fileName;
+    file = new QFile(filePath);
+    if(!file->open(QIODevice::WriteOnly | QIODevice::Append))
+    {
+        qDebug() << "file [" << filePath << "[ open fail";
+    }
+    qDebug() << "file path is [" << filePath << "]";
+    int fileNameSize = qstrlen(fileName.toUtf8().data());
+    sprintf(sendbuf,"%4d%4d%4d%s", 8+fileNameSize, 5, fileNameSize, fileName.toUtf8().data());
+    qDebug() << "sendbuf is [" << sendbuf << "]";
+    (*sock)->write(QString(sendbuf).toUtf8());
+}
+
+void Control::recvFile(QTcpSocket **sock){
+    if(isFirstRecvFile){    //第一次接收文件信息数据
+        QByteArray msg = (*sock)->readAll();
+        int fileNameSize = msg.left(4).toInt();
+        msg.remove(0, 4);
+        msg.remove(0, fileNameSize);
+        recvFileSize = msg.toLong();
+        isFirstRecvFile = false;
+
+
+
+    }
+    else {                  //接收文件数据并存入本地文件
+        QByteArray msg = (*sock)->readAll();
+        qint64 len = file->write(msg);
+        recvSize += len;
+        qDebug() << "write file size [" << len << "]" << "all write [" << recvSize <<"]";
+        if(recvSize == recvFileSize){
+            file->close();
+            isFirstRecvFile = true;
+            recvFileSize = 0;
+            recvSize = 0;
+        }
+    }
+}
 //服务器响应消息处理函数
 void Control::processResponse(int flag, QString &msg)    //msg格式 ：信息段+信息段。。。
 {
@@ -109,56 +141,8 @@ void Control::onRead()        //读取消息长度len和消息类型flag后交�
     QByteArray bflag =  bta.left(4);            // flag
     int flag = bflag.toInt();qDebug()<<"flag = "<<flag;
     QString msg = bta.remove(0, 4);
-    if(flag == 20)
-        saveFileSection(bta);
-    else
-        processResponse(flag, msg);
+    processResponse(flag, msg);
 
-}
-
-void Control::saveFileSection(QByteArray &bta)
-{
-    /*发送文件的格式 文件名长+文件名+分段编号+最大编号+数据段长度+数据段
-     *           [  4   ]+[ *  ]+[  8位 ]+[  8位 ]+[   4位  ]+[ *  ]*/
-    qDebug() << bta;
-    int len = 0;
-    len = bta.left(4).toInt();
-    bta.remove(0,4);
-    QString fileName = bta.left(len);
-    bta.remove(0, len);
-    int curSection = bta.left(8).toInt();//qDebug() << curSection;
-    bta.remove(0, 8);
-    int maxSection = bta.left(8).toInt();
-    bta.remove(0, 8);
-    bta.remove(0, 4);//此时bta是最后的数据部分
-    QMap<QString, QMap<int, QByteArray> >::iterator iterSM = filebuf.find(fileName);
-    QMap<int,QByteArray>::iterator iterIB;
-    if(iterSM != filebuf.end()){            //将该片段存入filebuf map
-        iterSM->insert(curSection, bta);
-    }
-    else {
-        QMap<int, QByteArray> fileMap;
-        fileMap.insert(curSection, bta);
-        filebuf.insert(fileName, fileMap);
-    }
-    //如果该文件所有片段都已经接收，则打开(不存在的时候创建)该文件并写入数据
-    if(filebuf.value(fileName).size() == maxSection){
-        QFile file(QDir::currentPath() + "\\" + fileName);
-        if(file.open(QFile::WriteOnly)){
-            qDebug() << QDir::currentPath()<<"/"<<fileName;
-            QMap<int,QByteArray> item = filebuf.value(fileName);
-            for(QMap<int,QByteArray>::iterator iter = item.begin();iter != item.end();iter++){
-                file.write(iter.value());
-            }
-            filebuf.remove(fileName);
-        }
-        else {
-            qDebug() << "file " << fileName <<"open failed";
-        }
-    }
-    if(SocketControl::socket()->bytesAvailable() > 0){
-        emit SocketControl::socket()->readyRead();
-    }
 }
 
 bool Control::processRegisterMsg(QString & msg)

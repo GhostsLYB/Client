@@ -29,6 +29,7 @@ SOURCES += \
         chatpage.cpp \
         control.cpp \
         customlistwidgetitem.cpp \
+        filesendrecv.cpp \
         homepage.cpp \
         homepagemenu.cpp \
         homepagetop.cpp \
@@ -45,6 +46,7 @@ HEADERS += \
         chatpage.h \
         control.h \
         customlistwidgetitem.h \
+        filesendrecv.h \
         homepage.h \
         homepagemenu.h \
         homepagetop.h \
