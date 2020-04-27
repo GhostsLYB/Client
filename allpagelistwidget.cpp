@@ -50,6 +50,7 @@ AllPageListWidget::AllPageListWidget(QWidget *parent) :
 
 }
 
+//与好友聊天界面
 void AllPageListWidget::onChatWith(QString friendName)
 {
     ui->tabWidget->setCurrentIndex(3);
@@ -59,6 +60,12 @@ void AllPageListWidget::onChatWith(QString friendName)
     sqlite->getDataList(sqlite->getDatabaseName()+"_chatInfo",nullptr,&list,friendName);
     if(!list.isEmpty())
         chatPage->initInfo(&list);
+}
+
+//显示用户信息界面
+void AllPageListWidget::onUserInfo(QString userName)
+{
+
 }
 
 void AllPageListWidget::onChatMsgInert(ChatInfo chatInfo)

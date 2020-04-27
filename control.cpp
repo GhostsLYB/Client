@@ -63,6 +63,7 @@ void Control::sendFileRequest(QTcpSocket ** sock, QString fileName){
     char sendbuf[100] = {0};
     QString filePath = "E:\\always\\IM\\file\\" +fileName;
     file = new QFile(filePath);
+    file->remove(); //删除原有同名文件文件
     if(!file->open(QIODevice::WriteOnly | QIODevice::Append))
     {
         qDebug() << "file [" << filePath << "[ open fail";
@@ -77,21 +78,20 @@ void Control::sendFileRequest(QTcpSocket ** sock, QString fileName){
 void Control::recvFile(QTcpSocket **sock){
     if(isFirstRecvFile){    //第一次接收文件信息数据
         QByteArray msg = (*sock)->readAll();
+        qDebug() << "first recv file info : " << msg;
         int fileNameSize = msg.left(4).toInt();
         msg.remove(0, 4);
         msg.remove(0, fileNameSize);
         recvFileSize = msg.toLong();
         isFirstRecvFile = false;
-
-
-
     }
     else {                  //接收文件数据并存入本地文件
         QByteArray msg = (*sock)->readAll();
+//        qDebug() << "file data : " << msg;
         qint64 len = file->write(msg);
         recvSize += len;
         qDebug() << "write file size [" << len << "]" << "all write [" << recvSize <<"]";
-        if(recvSize == recvFileSize){
+        if(recvSize >= recvFileSize){
             file->close();
             isFirstRecvFile = true;
             recvFileSize = 0;

@@ -3,6 +3,8 @@
 
 #include <QWidget>
 #include <QListWidget>
+#include <QDebug>
+#include "customUI/friendlistitem.h"
 
 namespace Ui {
 class WidgetFriend;
@@ -15,6 +17,12 @@ class WidgetFriend : public QWidget
 public:
     explicit WidgetFriend(QWidget *parent = nullptr);
     ~WidgetFriend();
+
+signals:
+    void sigItemClicked(QString);
+
+private slots:
+    void onItemClicked(QString);
 
 private:
     Ui::WidgetFriend *ui;

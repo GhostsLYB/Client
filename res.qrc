@@ -4,5 +4,7 @@
         <file>icon/2.PNG</file>
         <file>assets/ghost.db</file>
         <file>assets/root.db</file>
+        <file>icon/head_picture/1.png</file>
+        <file>icon/head_picture/2.png</file>
     </qresource>
 </RCC>

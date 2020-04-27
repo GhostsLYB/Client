@@ -28,6 +28,8 @@ SOURCES += \
         allpagelistwidget.cpp \
         chatpage.cpp \
         control.cpp \
+        customUI/friendlistitem.cpp \
+        customUI/userinfopage.cpp \
         customlistwidgetitem.cpp \
         filesendrecv.cpp \
         homepage.cpp \
@@ -45,6 +47,8 @@ HEADERS += \
         allpagelistwidget.h \
         chatpage.h \
         control.h \
+        customUI/friendlistitem.h \
+        customUI/userinfopage.h \
         customlistwidgetitem.h \
         filesendrecv.h \
         homepage.h \
@@ -60,6 +64,8 @@ HEADERS += \
 FORMS += \
         allpagelistwidget.ui \
         chatpage.ui \
+        customUI/friendlistitem.ui \
+        customUI/userinfopage.ui \
         customlistwidgetitem.ui \
         homepage.ui \
         homepagemenu.ui \

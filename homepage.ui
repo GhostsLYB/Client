@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>280</width>
+    <width>316</width>
     <height>480</height>
    </rect>
   </property>
@@ -70,7 +70,7 @@
            <enum>QTabWidget::Rounded</enum>
           </property>
           <property name="currentIndex">
-           <number>3</number>
+           <number>0</number>
           </property>
           <property name="usesScrollButtons">
            <bool>true</bool>

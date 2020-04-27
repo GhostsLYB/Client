@@ -28,6 +28,7 @@ public:
     bool setLoginState(bool state){isLogin = state;}
 public slots:
     void onChatWith(QString);
+    void onUserInfo(QString);
     void onLoginSuccessed(QString);
     void onChatMsgInert(ChatInfo);
 private:
