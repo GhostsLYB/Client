@@ -7,8 +7,8 @@
 #include <QListWidget>
 #include <QTextEdit>
 #include <QDateTime>
-#include "control.h"
-#include "sqlitecontrol.h"
+#include "socket/control.h"
+#include "database/sqlitecontrol.h"
 
 namespace Ui {
 class ChatPage;

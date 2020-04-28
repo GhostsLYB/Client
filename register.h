@@ -6,7 +6,7 @@
 #include <QByteArray>
 #include <QString>
 #include <QMessageBox>
-#include "control.h"
+#include "socket/control.h"
 
 using namespace std;
 

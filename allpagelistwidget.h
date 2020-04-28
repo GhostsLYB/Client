@@ -7,11 +7,8 @@
 #include "login.h"
 #include "register.h"
 #include "chatpage.h"
-#include "control.h"
-#include "sqlitecontrol.h"
-
-#include <QJsonObject>
-#include <QJsonValue>
+#include "socket/control.h"
+#include "database/sqlitecontrol.h"
 
 namespace Ui {
 class AllPageListWidget;

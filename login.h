@@ -5,7 +5,7 @@
 #include <QDebug>
 #include <QTcpSocket>
 #include <QString>
-#include "control.h"
+#include "socket/control.h"
 
 namespace Ui {
 class Login;

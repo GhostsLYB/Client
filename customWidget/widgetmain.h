@@ -5,8 +5,8 @@
 #include <QLabel>
 #include <QString>
 #include <QListWidget>
-#include "homepagetop.h"
-#include "customlistwidgetitem.h"
+#include "customUI/homepagetop.h"
+#include "customUI/customlistwidgetitem.h"
 
 namespace Ui {
 class WidgetMain;

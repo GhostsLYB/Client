@@ -35,6 +35,7 @@ AllPageListWidget::AllPageListWidget(QWidget *parent) :
     connect(chatPage->btn_back,&QPushButton::clicked,[&](){ui->tabWidget->setCurrentIndex(2);});
     connect(chatPage,&ChatPage::sigSend,this,&AllPageListWidget::onChatMsgInert);
     connect(chatPage,&ChatPage::sigRecv,this,&AllPageListWidget::onChatMsgInert);
+    //userInfo page
 
     if(isLogin)
         ui->tabWidget->setCurrentIndex(2);

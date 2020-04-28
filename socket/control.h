@@ -6,8 +6,8 @@
 #include <QFile>
 #include <QDir>
 #include <QFileInfo>
-#include "socketcontrol.h"
 #include <QThread>
+#include "socket/socketcontrol.h"
 
 class Control : public QObject
 {

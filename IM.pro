@@ -27,53 +27,51 @@ CONFIG += c++11
 SOURCES += \
         allpagelistwidget.cpp \
         chatpage.cpp \
-        control.cpp \
+        customUI/customlistwidgetitem.cpp \
         customUI/friendlistitem.cpp \
-        customUI/userinfopage.cpp \
-        customlistwidgetitem.cpp \
-        filesendrecv.cpp \
+        customUI/homepagemenu.cpp \
+        customUI/homepagetop.cpp \
+        customWidget/widgetfriend.cpp \
+        customWidget/widgetmain.cpp \
+        database/sqlitecontrol.cpp \
         homepage.cpp \
-        homepagemenu.cpp \
-        homepagetop.cpp \
         main.cpp \
         login.cpp \
         register.cpp \
-        socketcontrol.cpp \
-        sqlitecontrol.cpp \
-        widgetfriend.cpp \
-        widgetmain.cpp
+        socket/control.cpp \
+        socket/socketcontrol.cpp \
+        userinfopage.cpp
 
 HEADERS += \
         allpagelistwidget.h \
         chatpage.h \
-        control.h \
+        customUI/customlistwidgetitem.h \
         customUI/friendlistitem.h \
-        customUI/userinfopage.h \
-        customlistwidgetitem.h \
-        filesendrecv.h \
+        customUI/homepagemenu.h \
+        customUI/homepagetop.h \
+        customWidget/widgetfriend.h \
+        customWidget/widgetmain.h \
+        database/sqlitecontrol.h \
         homepage.h \
-        homepagemenu.h \
-        homepagetop.h \
         login.h \
         register.h \
-        socketcontrol.h \
-        sqlitecontrol.h \
-        widgetfriend.h \
-        widgetmain.h
+        socket/control.h \
+        socket/socketcontrol.h \
+        userinfopage.h
 
 FORMS += \
         allpagelistwidget.ui \
         chatpage.ui \
+        customUI/customlistwidgetitem.ui \
         customUI/friendlistitem.ui \
-        customUI/userinfopage.ui \
-        customlistwidgetitem.ui \
+        customUI/homepagemenu.ui \
+        customUI/homepagetop.ui \
+        customWidget/widgetfriend.ui \
+        customWidget/widgetmain.ui \
         homepage.ui \
-        homepagemenu.ui \
-        homepagetop.ui \
         login.ui \
         register.ui \
-        widgetfriend.ui \
-        widgetmain.ui
+        userinfopage.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

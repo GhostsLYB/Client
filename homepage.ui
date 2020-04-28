@@ -268,13 +268,13 @@
   <customwidget>
    <class>HomePageTop</class>
    <extends>QWidget</extends>
-   <header location="global">homepagetop.h</header>
+   <header location="global">customUI/homepagetop.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>HomePageMenu</class>
    <extends>QWidget</extends>
-   <header location="global">homepagemenu.h</header>
+   <header location="global">customUI/homepagemenu.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

@@ -4,12 +4,10 @@
 #include <QWidget>
 #include <QTabBar>
 #include <QFileDialog>
-#include "widgetmain.h"
-#include "widgetfriend.h"
-#include "homepagetop.h"
-#include "control.h"
-
-#include "filesendrecv.h"
+#include "customWidget/widgetmain.h"
+#include "customWidget/widgetfriend.h"
+#include "customUI/homepagetop.h"
+#include "socket/control.h"
 
 namespace Ui {
 class HomePage;
@@ -31,7 +29,6 @@ signals:
 
 private slots:
     void on_btn_exit_clicked();
-
     void on_btn_sendFile_clicked();
     void on_btn_recvFile_clicked();
 
