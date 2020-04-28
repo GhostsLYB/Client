@@ -19,6 +19,7 @@ AllPageListWidget::AllPageListWidget(QWidget *parent) :
     homepage = new HomePage(ctrl,this);
     ui->tab_home->layout()->addWidget(homepage);
     connect(homepage,&HomePage::sigChatWith,this,&AllPageListWidget::onChatWith);
+    connect(homepage,&HomePage::sigShowUserInfo,this, &AllPageListWidget::onShowUserInfo);
     connect(homepage,&HomePage::sigExit,[&](){ui->tabWidget->setCurrentIndex(0);});
     //login page
     login = new Login(ctrl);
@@ -32,11 +33,20 @@ AllPageListWidget::AllPageListWidget(QWidget *parent) :
     //chat page
     chatPage = new ChatPage(ctrl);
     ui->tab_chat->layout()->addWidget(chatPage);
-    connect(chatPage->btn_back,&QPushButton::clicked,[&](){ui->tabWidget->setCurrentIndex(2);});
-    connect(chatPage,&ChatPage::sigSend,this,&AllPageListWidget::onChatMsgInert);
-    connect(chatPage,&ChatPage::sigRecv,this,&AllPageListWidget::onChatMsgInert);
+    connect(chatPage->btn_back,&QPushButton::clicked,[&](){
+        ui->tabWidget->setCurrentIndex(2);
+        homepage->setIndex(0);
+    });
+    connect(chatPage,&ChatPage::sigSend,this,&AllPageListWidget::onChatMsgInsert);
+    connect(chatPage,&ChatPage::sigRecv,this,&AllPageListWidget::onChatMsgInsert);
     //userInfo page
-
+    userInfoPage = new UserInfoPage(ctrl);
+    ui->tab_userInfo->layout()->addWidget(userInfoPage);
+    connect(userInfoPage, &UserInfoPage::sigChatWith,this,&AllPageListWidget::onChatWith);
+    connect(userInfoPage, &UserInfoPage::sigFriendList,[&](){
+        ui->tabWidget->setCurrentIndex(2);
+        homepage->setIndex(1);
+    });
     if(isLogin)
         ui->tabWidget->setCurrentIndex(2);
     else
@@ -44,10 +54,6 @@ AllPageListWidget::AllPageListWidget(QWidget *parent) :
 
     if(!ctrl->sock->isconnected())
         ctrl->sock->toConnect();
-
-    //    QJsonObject *ob = new QJsonObject();
-    //    ob->insert("flag",QJsonValue(1));
-    //    ob->insert("message","msg part");
 
 }
 
@@ -64,12 +70,14 @@ void AllPageListWidget::onChatWith(QString friendName)
 }
 
 //显示用户信息界面
-void AllPageListWidget::onUserInfo(QString userName)
+void AllPageListWidget::onShowUserInfo(QString userName, int backPage = 0)
 {
-
+    ui->tabWidget->setCurrentIndex(4);//显示用户信息界面
+    userInfoPage->setUserName(userName);
+    userInfoPage->setBackPage(backPage);
 }
 
-void AllPageListWidget::onChatMsgInert(ChatInfo chatInfo)
+void AllPageListWidget::onChatMsgInsert(ChatInfo chatInfo)
 {
     sqlite->insertData(sqlite->getDatabaseName()+"_chatInfo",nullptr,&chatInfo);
 }
@@ -79,6 +87,7 @@ void AllPageListWidget::onLoginSuccessed(QString userName)
     ui->tabWidget->setCurrentIndex(2);
     homepage->setIndex(0);
     homepage->setTopShow();
+    homepage->setUserName(userName);
     sqlite->setDatabase(userName);
 //    sqlite->importTxtForChatInfo();
     qDebug() << "login user:"<<userName;//登陆成功

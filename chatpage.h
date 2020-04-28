@@ -25,28 +25,28 @@ public:
     void setFriendName(QString friendName){lb_friendName->setText(friendName);}
     QString getFriendName(){return lb_friendName->text();}
     void initInfo(QList<ChatInfo> *list);
+
 signals:
-    void isClosed();
     void sigSend(ChatInfo);
     void sigRecv(ChatInfo);
+
 public slots:
     void onRecvMessage(QString);
-protected:
-    void closeEvent(QCloseEvent *e);
+
 private:
     void onSend();
     void addToListWidget(const QString&,const int&,const QString&,const QString&,const QString&,const QString&);
 
 public:
     QPushButton * btn_back;
-    QLabel * lb_friendName;
+    QLabel      * lb_friendName;
     QPushButton * btn_info;
     QListWidget * listWidget;
-    QTextEdit * te_sendBox;
+    QTextEdit   * te_sendBox;
     QPushButton * btn_send;
 private:
     Ui::ChatPage *ui;
-    Control *ctrl = nullptr;
+    Control      *ctrl = nullptr;
 
 };
 

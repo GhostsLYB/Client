@@ -24,12 +24,15 @@ HomePage::HomePage(Control * parentTrol, QWidget *parent) :
     wid_main->layout()->setMargin(0);
     wid_main->layout()->setSpacing(0);
     ui->tab_main->layout()->addWidget(wid_main);
-    connect(wid_main,&WidgetMain::sigItemClicked,this,&HomePage::onItemClicked);
+    connect(wid_main,&WidgetMain::sigItemClicked,this,&HomePage::onChatItemClicked);
     //通讯录：所有好友列表
     wid_friend = new WidgetFriend(ui->tab_friend);
     wid_friend->layout()->setMargin(0);
     wid_friend->layout()->setSpacing(0);
     ui->tab_friend->layout()->addWidget(wid_friend);
+    connect(wid_friend, &WidgetFriend::sigItemClicked, this, &HomePage::onFriendItemClicked);
+    //我的信息界面
+    wid_mine = ui->wid_mine_2;
     //主页的四个页面的切换
     connect(ui->wid_homePage,&HomePageMenu::btn_pageClicked,[&](int index){
         ui->tabWidget->setCurrentIndex(index);
@@ -41,17 +44,27 @@ HomePage::HomePage(Control * parentTrol, QWidget *parent) :
             ui->wid_homePageTop->setWord("Friend");
         else if (index == 2)
             ui->wid_homePageTop->setWord("Dynamic");
-        else
+        else{
             ui->wid_homePageTop->hide();
+            wid_mine->setUserName(userName);
+        }
     });
 
 }
 
-void HomePage::onItemClicked(QString friendName)
+//最近聊天界面点击好友项信号的槽函数
+void HomePage::onChatItemClicked(QString friendName)
 {
     //弹出与好友friend Name的俩天窗口
     qDebug() << "chat with "<<friendName;
     emit sigChatWith(friendName);
+}
+
+//通讯界面点击好友项信号的槽函数
+void HomePage::onFriendItemClicked(QString friendName)
+{
+    qDebug() << "show user info " << friendName;
+    emit sigShowUserInfo(friendName);
 }
 
 HomePage::~HomePage()

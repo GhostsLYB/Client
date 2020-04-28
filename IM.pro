@@ -33,6 +33,7 @@ SOURCES += \
         customUI/homepagetop.cpp \
         customWidget/widgetfriend.cpp \
         customWidget/widgetmain.cpp \
+        customWidget/widgetmine.cpp \
         database/sqlitecontrol.cpp \
         homepage.cpp \
         main.cpp \
@@ -51,6 +52,7 @@ HEADERS += \
         customUI/homepagetop.h \
         customWidget/widgetfriend.h \
         customWidget/widgetmain.h \
+        customWidget/widgetmine.h \
         database/sqlitecontrol.h \
         homepage.h \
         login.h \
@@ -68,6 +70,7 @@ FORMS += \
         customUI/homepagetop.ui \
         customWidget/widgetfriend.ui \
         customWidget/widgetmain.ui \
+        customWidget/widgetmine.ui \
         homepage.ui \
         login.ui \
         register.ui \

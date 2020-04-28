@@ -90,12 +90,6 @@ void ChatPage::addToListWidget(const QString &peerName,const int &flag,const QSt
     listWidget->addItem(item);
 }
 
-void ChatPage::closeEvent(QCloseEvent *e)
-{
-    Q_UNUSED(e);
-    emit isClosed();
-}
-
 //打开聊天页面时初始化与该用户的聊天记录，读取userName_chatIn表
 void ChatPage::initInfo(QList<ChatInfo> *list)
 {

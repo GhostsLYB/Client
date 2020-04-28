@@ -62,7 +62,7 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>返回</string>
+         <string>&lt;</string>
         </property>
        </widget>
       </item>
