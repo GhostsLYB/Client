@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>316</width>
+    <width>318</width>
     <height>480</height>
    </rect>
   </property>
@@ -214,7 +214,7 @@
                 <number>0</number>
                </property>
                <item>
-                <widget class="WidgetMine" name="wid_mine_2" native="true"/>
+                <widget class="QWidget" name="wid_mine_2" native="true"/>
                </item>
                <item>
                 <layout class="QHBoxLayout" name="horizontalLayout">
@@ -285,12 +285,6 @@
    <class>HomePageMenu</class>
    <extends>QWidget</extends>
    <header location="global">customUI/homepagemenu.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>WidgetMine</class>
-   <extends>QWidget</extends>
-   <header location="global">widgetmine.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

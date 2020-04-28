@@ -32,7 +32,12 @@ HomePage::HomePage(Control * parentTrol, QWidget *parent) :
     ui->tab_friend->layout()->addWidget(wid_friend);
     connect(wid_friend, &WidgetFriend::sigItemClicked, this, &HomePage::onFriendItemClicked);
     //我的信息界面
-    wid_mine = ui->wid_mine_2;
+    wid_mine = new WidgetMine(ui->tab_mine);
+    QVBoxLayout *wid_mine_2_layout = new QVBoxLayout(ui->tab_mine);
+    wid_mine_2_layout->setMargin(0);
+    wid_mine_2_layout->setSpacing(0);
+    wid_mine_2_layout->addWidget(wid_mine);
+    ui->wid_mine_2->setLayout(wid_mine_2_layout);
     //主页的四个页面的切换
     connect(ui->wid_homePage,&HomePageMenu::btn_pageClicked,[&](int index){
         ui->tabWidget->setCurrentIndex(index);
