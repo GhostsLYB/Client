@@ -15,22 +15,25 @@ AllPageListWidget::AllPageListWidget(QWidget *parent) :
     connect(ctrl->sock->socket(),&QTcpSocket::connected,ctrl->sock,&SocketControl::onConnected);
     connect(ctrl->sock->socket(),&QTcpSocket::disconnected,ctrl->sock,&SocketControl::onDisconnected);
     connect(ctrl->sock->socket(),&QTcpSocket::readyRead,ctrl,&Control::onRead);
-    //home page
+    //home page index = 2
     homepage = new HomePage(ctrl,this);
     ui->tab_home->layout()->addWidget(homepage);
     connect(homepage,&HomePage::sigChatWith,this,&AllPageListWidget::onChatWith);
     connect(homepage,&HomePage::sigShowUserInfo,this, &AllPageListWidget::onShowUserInfo);
     connect(homepage,&HomePage::sigExit,[&](){ui->tabWidget->setCurrentIndex(0);});
-    //login page
+    connect(homepage,&HomePage::sigSetMineInfo,this,&AllPageListWidget::onSetMineInfo);
+    connect(this,&AllPageListWidget::sigGetTableDataFinish,homepage,&HomePage::onSetMineInfo);
+    connect(homepage,&HomePage::sigShowAllInfo,this,&AllPageListWidget::onShowAllInfo);
+    //login page index = 0
     login = new Login(ctrl);
     ui->tab_login->layout()->addWidget(login);
     connect(login,&Login::sigRegisterClicked,[&](){ui->tabWidget->setCurrentIndex(1);});
     connect(login,&Login::sigLoginSuccessed,this,&AllPageListWidget::onLoginSuccessed);
-    //register page
+    //register page index = 1
     regist = new Register(ctrl);
     ui->tab_register->layout()->addWidget(regist);
     connect(regist,&Register::sigRegisterCancel,[&](){ui->tabWidget->setCurrentIndex(0);});
-    //chat page
+    //chat page index = 3
     chatPage = new ChatPage(ctrl);
     ui->tab_chat->layout()->addWidget(chatPage);
     connect(chatPage->btn_back,&QPushButton::clicked,[&](){
@@ -39,13 +42,21 @@ AllPageListWidget::AllPageListWidget(QWidget *parent) :
     });
     connect(chatPage,&ChatPage::sigSend,this,&AllPageListWidget::onChatMsgInsert);
     connect(chatPage,&ChatPage::sigRecv,this,&AllPageListWidget::onChatMsgInsert);
-    //userInfo page
+    //userInfo page index = 4
     userInfoPage = new UserInfoPage(ctrl);
     ui->tab_userInfo->layout()->addWidget(userInfoPage);
     connect(userInfoPage, &UserInfoPage::sigChatWith,this,&AllPageListWidget::onChatWith);
     connect(userInfoPage, &UserInfoPage::sigFriendList,[&](){
         ui->tabWidget->setCurrentIndex(2);
         homepage->setIndex(1);
+    });
+    //detailedInfo page index = 5
+    detailedInfoPage = new DetailedInfoPage(ctrl, ui->tab_allInfo);
+    ui->tab_allInfo->layout()->addWidget(detailedInfoPage);
+    ui->tab_allInfo->layout()->setMargin(0);
+    ui->tab_allInfo->layout()->setSpacing(0);
+    connect(detailedInfoPage,&DetailedInfoPage::sigBackToMine,[&](){
+        ui->tabWidget->setCurrentIndex(2);
     });
     if(isLogin)
         ui->tabWidget->setCurrentIndex(2);
@@ -73,8 +84,13 @@ void AllPageListWidget::onChatWith(QString friendName)
 void AllPageListWidget::onShowUserInfo(QString userName, int backPage = 0)
 {
     ui->tabWidget->setCurrentIndex(4);//显示用户信息界面
-    userInfoPage->setUserName(userName);
-    userInfoPage->setBackPage(backPage);
+    if(userName != userInfoPage->getUserName()){
+        userInfoPage->setUserName(userName);
+        userInfoPage->setBackPage(backPage);
+        QList<QString> data;
+        sqlite->getTableData("user_info", userName, data);
+        userInfoPage->setUserInfo(data);
+    }
 }
 
 void AllPageListWidget::onChatMsgInsert(ChatInfo chatInfo)
@@ -91,6 +107,20 @@ void AllPageListWidget::onLoginSuccessed(QString userName)
     sqlite->setDatabase(userName);
 //    sqlite->importTxtForChatInfo();
     qDebug() << "login user:"<<userName;//登陆成功
+}
+
+//获取数据库中表格的数据
+void AllPageListWidget::onSetMineInfo(QString tableName, QString userName, QList<QString> &data)
+{
+    sqlite->getTableData(tableName, userName, data);
+    emit sigGetTableDataFinish();
+}
+
+//显示详细信息界面
+void AllPageListWidget::onShowAllInfo(QString userName, int targetPage)
+{
+    ui->tabWidget->setCurrentIndex(5);//显示已登录用户的详细信息
+    detailedInfoPage->setCurrentPage(targetPage);
 }
 
 AllPageListWidget::~AllPageListWidget()

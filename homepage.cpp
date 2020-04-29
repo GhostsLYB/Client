@@ -7,7 +7,6 @@ HomePage::HomePage(Control * parentTrol, QWidget *parent) :
     recvSendFileSocket(nullptr)
 {
     ui->setupUi(this);
-
     ui->tabWidget->tabBar()->hide();
     this->setWindowTitle("HomePage");
     this->setAttribute(Qt::WA_DeleteOnClose);
@@ -38,6 +37,9 @@ HomePage::HomePage(Control * parentTrol, QWidget *parent) :
     wid_mine_2_layout->setSpacing(0);
     wid_mine_2_layout->addWidget(wid_mine);
     ui->wid_mine_2->setLayout(wid_mine_2_layout);
+    connect(wid_mine,&WidgetMine::sigShowAllInfo,[&](QString userName, int targetPage){
+        emit sigShowAllInfo(userName, targetPage);//目标页为0（详细信息界面）
+    });
     //主页的四个页面的切换
     connect(ui->wid_homePage,&HomePageMenu::btn_pageClicked,[&](int index){
         ui->tabWidget->setCurrentIndex(index);
@@ -51,7 +53,10 @@ HomePage::HomePage(Control * parentTrol, QWidget *parent) :
             ui->wid_homePageTop->setWord("Dynamic");
         else{
             ui->wid_homePageTop->hide();
-            wid_mine->setUserName(userName);
+            if(wid_mine->getUserName() != userName){
+                wid_mine->setUserName(userName);
+                emit sigSetMineInfo("user_info", userName, mineInfo);
+            }
         }
     });
 
@@ -70,6 +75,14 @@ void HomePage::onFriendItemClicked(QString friendName)
 {
     qDebug() << "show user info " << friendName;
     emit sigShowUserInfo(friendName);
+}
+
+void HomePage::onSetMineInfo(){
+//    qDebug() << mineInfo.size();
+//    for(int i = 0; i < mineInfo.size();i++){
+//        qDebug() << mineInfo[i];
+//    }
+    wid_mine->setUserInfo(mineInfo);
 }
 
 HomePage::~HomePage()

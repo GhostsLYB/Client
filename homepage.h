@@ -25,14 +25,18 @@ public:
     void setTopShow();
     void setUserName(QString name){userName = name;}
     QString getUserName(){return userName;}
+
 signals:
     void sigExit();
     void sigChatWith(QString);
     void sigShowUserInfo(QString, int backPage = 0);
+    void sigSetMineInfo(QString, QString, QList<QString>&);
+    void sigShowAllInfo(QString, int targetPage);
 
 public slots:
     void onChatItemClicked(QString);
     void onFriendItemClicked(QString);
+    void onSetMineInfo();
 
 private slots:
     void on_btn_exit_clicked();
@@ -48,6 +52,7 @@ private:
     QTcpSocket      *recvSendFileSocket;
     QString         filePath;
     QString         userName;
+    QList<QString>  mineInfo;
 };
 
 #endif // HOMEPAGE_H

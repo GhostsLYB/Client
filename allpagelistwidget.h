@@ -10,6 +10,7 @@
 #include "userinfopage.h"
 #include "socket/control.h"
 #include "database/sqlitecontrol.h"
+#include "assistPage/detailedinfopage.h"
 
 namespace Ui {
 class AllPageListWidget;
@@ -24,21 +25,26 @@ public:
     ~AllPageListWidget();
     bool isLogined(){return isLogin;}
     void setLoginState(bool state){isLogin = state;}
+signals:
+    void sigGetTableDataFinish();
 public slots:
     void onChatWith(QString);
-    void onShowUserInfo(QString, int);
+    void onShowUserInfo(QString, int backPage);
     void onLoginSuccessed(QString);
     void onChatMsgInsert(ChatInfo);
+    void onSetMineInfo(QString, QString, QList<QString>&);
+    void onShowAllInfo(QString, int targetPage);
 private:
-    Ui::AllPageListWidget *ui;
-    Control       *ctrl         = nullptr;
-    HomePage      *homepage     = nullptr;
-    Login         *login        = nullptr;
-    Register      *regist       = nullptr;
-    ChatPage      *chatPage     = nullptr;
-    UserInfoPage  *userInfoPage = nullptr;
-    bool          isLogin       = false  ;
-    SqliteControl *sqlite       = nullptr;
+    Ui::AllPageListWidget   *ui;
+    Control                 *ctrl         = nullptr;
+    HomePage                *homepage     = nullptr;
+    Login                   *login        = nullptr;
+    Register                *regist       = nullptr;
+    ChatPage                *chatPage     = nullptr;
+    UserInfoPage            *userInfoPage = nullptr;
+    DetailedInfoPage        *detailedInfoPage = nullptr;
+    bool                    isLogin       = false  ;
+    SqliteControl           *sqlite       = nullptr;
 };
 
 #endif // ALLPAGELISTWIDGET_H

@@ -26,6 +26,7 @@ CONFIG += c++11
 
 SOURCES += \
         allpagelistwidget.cpp \
+        assistPage/detailedinfopage.cpp \
         chatpage.cpp \
         customUI/customlistwidgetitem.cpp \
         customUI/friendlistitem.cpp \
@@ -45,6 +46,7 @@ SOURCES += \
 
 HEADERS += \
         allpagelistwidget.h \
+        assistPage/detailedinfopage.h \
         chatpage.h \
         customUI/customlistwidgetitem.h \
         customUI/friendlistitem.h \
@@ -63,6 +65,7 @@ HEADERS += \
 
 FORMS += \
         allpagelistwidget.ui \
+        assistPage/detailedinfopage.ui \
         chatpage.ui \
         customUI/customlistwidgetitem.ui \
         customUI/friendlistitem.ui \

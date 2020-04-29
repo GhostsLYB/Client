@@ -125,7 +125,28 @@
     </layout>
    </item>
    <item>
-    <layout class="QVBoxLayout" name="verticalLayout_2" stretch="2,5,4">
+    <layout class="QVBoxLayout" name="verticalLayout_2" stretch="2,2,5,4">
+     <property name="spacing">
+      <number>0</number>
+     </property>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_5" stretch="1,4">
+       <item>
+        <widget class="QLabel" name="label_3">
+         <property name="text">
+          <string>个性签名</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="lb_personalSignature">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="1,4">
        <property name="spacing">

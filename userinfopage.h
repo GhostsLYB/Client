@@ -22,6 +22,8 @@ public:
     void setBackPage(int page){backPage = page;}
     int getBackPage(){return backPage;}
     void setUserName(QString);
+    QString getUserName();
+    void setUserInfo(QList<QString>&);//设置用户信息界面的信息
     ~UserInfoPage();
 
 signals:
@@ -44,6 +46,7 @@ private:
     QLabel              *lb_userName;
     QLabel              *lb_number;
     QLabel              *lb_address;
+    QLabel              *lb_personalSignature;
     QLabel              *lb_phone;
     QLabel              *lb_dynamic1;
     QLabel              *lb_dynamic2;
@@ -52,6 +55,9 @@ private:
     QToolButton         *btn_sendMsg;
     QToolButton         *btn_deleteFriend;
     int                 backPage;   //返回界面，0：通讯录 1：聊天界面
+    QString             perUserName;
+    QString             perNumber;
+    QString             perAddress;
 };
 
 #endif // USERINFOPAGE_H

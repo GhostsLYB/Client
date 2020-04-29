@@ -16,7 +16,16 @@ class WidgetMine : public QWidget
 public:
     explicit WidgetMine(QWidget *parent = nullptr);
     void setUserName(QString);
+    void setUserInfo(QList<QString>&);
+    QString getUserName();
     ~WidgetMine();
+
+signals:
+    void sigShowAllInfo(QString userName, int targetPage);
+private slots:
+    void on_btn_info_clicked();
+
+    void on_btn_setup_clicked();
 
 private:
     Ui::WidgetMine  *ui;
@@ -26,6 +35,7 @@ private:
     QToolButton     *btn_info;
     QToolButton     *btn_modifyInfo;
     QToolButton     *btn_setup;
+    QString         preNumber;
 };
 
 #endif // WIDGETMINE_H

@@ -12,6 +12,21 @@ WidgetMine::WidgetMine(QWidget *parent) :
     btn_info        = ui->btn_info;
     btn_modifyInfo  = ui->btn_modifyInfo;
     btn_setup       = ui->btn_setup;
+    preNumber       = ui->lb_number->text();
+}
+
+void WidgetMine::setUserInfo(QList<QString> &data)
+{
+    lb_number->setText(preNumber + data[1]);
+    QString imagePath = "";
+    if(data[2] == "")
+        imagePath = "://icon//2.PNG";
+    else {
+        imagePath = data[2];
+    }
+    QPixmap pix;
+    pix.load(imagePath);
+    lb_image->setPixmap(pix);
 }
 
 void WidgetMine::setUserName(QString userName)
@@ -19,7 +34,22 @@ void WidgetMine::setUserName(QString userName)
     ui->lb_userName->setText(userName);
 }
 
+QString WidgetMine::getUserName()
+{
+    return ui->lb_userName->text();
+}
+
 WidgetMine::~WidgetMine()
 {
     delete ui;
+}
+
+void WidgetMine::on_btn_info_clicked()
+{
+    emit sigShowAllInfo(ui->lb_userName->text(), 0);
+}
+
+void WidgetMine::on_btn_setup_clicked()
+{
+    emit sigShowAllInfo(ui->lb_userName->text(), 2);
 }

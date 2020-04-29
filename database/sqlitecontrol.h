@@ -10,6 +10,7 @@
 #include <QtSql/QSqlDriver>
 #include <QtSql/QSqlError>
 #include <QVariant>
+#include <QList>
 #include <QDebug>
 #include <QSqlRecord>
 
@@ -40,6 +41,7 @@ public:
     bool deleteData(QString tableName, QString userName = nullptr);
     bool getData(QString tableName, QString userName, MyFriend * mData, ChatInfo * cData);
     bool getDataList(QString tableName, QList<MyFriend> * mList, QList<ChatInfo> * cList, QString userName = nullptr);
+    bool getTableData(QString tableName, QString userName, QList<QString> &data);
     void closeDatabase(){m_DataBase.close();}
     bool isExistTable(QString table);
     QString getDatabaseName();

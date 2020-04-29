@@ -12,14 +12,14 @@ void SqliteControl::setDatabase(QString databaseName)
     if (QSqlDatabase::contains(databaseName)) {
             qDebug() << "connected database "<<databaseName;
             m_DataBase = QSqlDatabase::database(databaseName);
-        }
-        else {
-            qDebug() << "connecting database "<<databaseName;
-            m_DataBase = QSqlDatabase::addDatabase("QSQLITE");
-            m_DataBase.setDatabaseName(QCoreApplication::applicationDirPath()+"/"+ databaseName+".db");//windows
-//            m_DataBase.setDatabaseName("/storage/emulated/0/0_temp/"+databaseName+".db");//雷电 手机
-//            m_DataBase.setDatabaseName("/document/"+databaseName+".db");
-        }
+    }
+    else {
+        qDebug() << "connecting database "<<databaseName;
+        m_DataBase = QSqlDatabase::addDatabase("QSQLITE");
+        m_DataBase.setDatabaseName(QCoreApplication::applicationDirPath()+"/"+ databaseName+".db");//windows
+        //            m_DataBase.setDatabaseName("/storage/emulated/0/0_temp/"+databaseName+".db");//雷电 手机
+        //            m_DataBase.setDatabaseName("/document/"+databaseName+".db");
+    }
         initTable();
 }
 
@@ -292,6 +292,58 @@ bool SqliteControl::getDataList(QString tableName, QList<MyFriend> *mList, QList
                 chatInfo.url        = query.value(5).toString();
                 chatInfo.time       = query.value(6).toString();
                 cList->append(chatInfo);
+            }
+            else {
+                return false;
+            }
+        }
+        return true;
+    }
+    else
+        return false;
+}
+
+bool SqliteControl::getTableData(QString tableName, QString userName, QList<QString> &data)
+{
+    if (!m_DataBase.open()) {
+            return false;
+    }
+    QString selectString;
+    if(tableName == QString("my_friend"))
+    {
+        selectString = QString("SELECT * FROM my_friend");
+    }
+    else if(tableName == QString("user_info")){
+        selectString = QString("SELECT * FROM %1 where username = '%2'")
+                                .arg(tableName)
+                                .arg(userName);
+    }
+    else{
+        return false;
+    }
+    QSqlQuery query(m_DataBase);
+    bool success = query.exec(selectString);
+    if(success)
+    {
+        QSqlRecord rec = query.record();
+        MyFriend myFriend;
+        ChatInfo chatInfo;
+        data.clear();
+        while (query.next())
+        {
+
+            if(tableName == QString("my_friend"))
+            {
+                data << query.value(0).toString();
+                data << query.value(1).toString();
+            }
+            else if (tableName == QString("user_info")) {
+                data << query.value(1).toString();
+                data << query.value(2).toString();
+                data << query.value(3).toString();
+                data << query.value(4).toString();
+                data << query.value(5).toString();
+                data << query.value(6).toString();
             }
             else {
                 return false;
