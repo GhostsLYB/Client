@@ -32,6 +32,7 @@ SOURCES += \
         customUI/friendlistitem.cpp \
         customUI/homepagemenu.cpp \
         customUI/homepagetop.cpp \
+        customUI/longbutton.cpp \
         customWidget/widgetfriend.cpp \
         customWidget/widgetmain.cpp \
         customWidget/widgetmine.cpp \
@@ -52,6 +53,7 @@ HEADERS += \
         customUI/friendlistitem.h \
         customUI/homepagemenu.h \
         customUI/homepagetop.h \
+        customUI/longbutton.h \
         customWidget/widgetfriend.h \
         customWidget/widgetmain.h \
         customWidget/widgetmine.h \
@@ -71,6 +73,7 @@ FORMS += \
         customUI/friendlistitem.ui \
         customUI/homepagemenu.ui \
         customUI/homepagetop.ui \
+        customUI/longbutton.ui \
         customWidget/widgetfriend.ui \
         customWidget/widgetmain.ui \
         customWidget/widgetmine.ui \

@@ -51,7 +51,7 @@ AllPageListWidget::AllPageListWidget(QWidget *parent) :
         homepage->setIndex(1);
     });
     //detailedInfo page index = 5
-    detailedInfoPage = new DetailedInfoPage(ctrl, ui->tab_allInfo);
+    detailedInfoPage = new DetailedInfoPage(ctrl, sqlite, ui->tab_allInfo);
     ui->tab_allInfo->layout()->addWidget(detailedInfoPage);
     ui->tab_allInfo->layout()->setMargin(0);
     ui->tab_allInfo->layout()->setSpacing(0);
@@ -120,7 +120,7 @@ void AllPageListWidget::onSetMineInfo(QString tableName, QString userName, QList
 void AllPageListWidget::onShowAllInfo(QString userName, int targetPage)
 {
     ui->tabWidget->setCurrentIndex(5);//显示已登录用户的详细信息
-    detailedInfoPage->setCurrentPage(targetPage);
+    detailedInfoPage->setCurrentPage(targetPage,userName);
 }
 
 AllPageListWidget::~AllPageListWidget()

@@ -39,6 +39,7 @@ bool SqliteControl::initTable()
     createTable("user_friendList");
     createTable("recent_chatList");
     createTable("user_info");
+    createTable("users");
     return false;
 }
 
@@ -49,7 +50,7 @@ bool SqliteControl::isExistTable(QString table)
         return bRet;
     }
     QSqlQuery query(m_DataBase);
-    bool ret =  query.exec(QString("select count(*) from sqlite_master where type='table' and name='%1'").arg(table));
+    /*bool ret =  */query.exec(QString("select count(*) from sqlite_master where type='table' and name='%1'").arg(table));
 
     if (query.next())
     {
@@ -58,7 +59,7 @@ bool SqliteControl::isExistTable(QString table)
             bRet = true;
         }
     }
-    if (ret)
+//    if (ret)
 //        qDebug()<<"select sqlite_master successed "<<bRet;
 //    else {
 //        qDebug()<<"select sqlite_master fail"<<bRet;
@@ -125,6 +126,17 @@ bool SqliteControl::createTable(QString tableName)
                                     "personalSignature  VARCHAR(200) DEFAULT '',"
                                     "address            VARCHAR(255) DEFAULT '',"
                                     "time               VARCHAR(20)  DEFAULT '')");
+    }
+    else if (tableName == QString("users")) {
+        if(isExistTable(QString("users")))
+            return false;
+        createTableString = QString("CREATE TABLE users ("
+                                    "id                 INTEGER         PRIMARY KEY AUTOINCREMENT NOT NULL,"
+                                    "username           VARCHAR(50)     NOT NULL,"
+                                    "sex                VARCHAR(10)     DEFAULT '',"
+                                    "age                INTEGER         DEFAULT 0,"
+                                    "email              VARCHAR(20)     DEFAULT '',"
+                                    "phone              VARCHAR(20)     DEFAULT '')");
     }
     else {
         return false;
@@ -314,9 +326,12 @@ bool SqliteControl::getTableData(QString tableName, QString userName, QList<QStr
         selectString = QString("SELECT * FROM my_friend");
     }
     else if(tableName == QString("user_info")){
-        selectString = QString("SELECT * FROM %1 where username = '%2'")
-                                .arg(tableName)
-                                .arg(userName);
+        selectString = QString("select user_info.username,number,imageUrl,personalSignature,"
+                               "address,sex,age,email,phone "
+                               "FROM user_info,users "
+                               "WHERE user_info.username = users.username and "
+                               "user_info.username = '%1'").arg(userName);
+        qDebug() << selectString;
     }
     else{
         return false;
@@ -338,12 +353,15 @@ bool SqliteControl::getTableData(QString tableName, QString userName, QList<QStr
                 data << query.value(1).toString();
             }
             else if (tableName == QString("user_info")) {
+                data << query.value(0).toString();
                 data << query.value(1).toString();
                 data << query.value(2).toString();
                 data << query.value(3).toString();
                 data << query.value(4).toString();
                 data << query.value(5).toString();
                 data << query.value(6).toString();
+                data << query.value(7).toString();
+                data << query.value(8).toString();
             }
             else {
                 return false;

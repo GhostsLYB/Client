@@ -73,14 +73,14 @@
        </widget>
       </item>
       <item>
-       <widget class="QLabel" name="label">
+       <widget class="QLabel" name="lb_tabTitle">
         <property name="text">
          <string>个人信息</string>
         </property>
        </widget>
       </item>
       <item>
-       <spacer name="horizontalSpacer">
+       <spacer name="HSpacer">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>
@@ -93,7 +93,7 @@
        </spacer>
       </item>
       <item>
-       <widget class="QToolButton" name="btn_edit">
+       <widget class="QToolButton" name="btn_save">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
           <horstretch>0</horstretch>
@@ -101,7 +101,10 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>编辑</string>
+         <string>保存</string>
+        </property>
+        <property name="autoRaise">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
@@ -120,15 +123,6 @@
       <attribute name="title">
        <string>allInfo</string>
       </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_3">
-       <item>
-        <widget class="QLabel" name="label_3">
-         <property name="text">
-          <string>详细信息</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
      </widget>
      <widget class="QWidget" name="tab_modifyInfo">
       <attribute name="title">

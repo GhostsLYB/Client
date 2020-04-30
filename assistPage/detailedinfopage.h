@@ -4,9 +4,17 @@
 #include <QWidget>
 #include <QTabWidget>
 #include <QTabBar>
+#include <QToolButton>
+#include <QLabel>
+#include <QLayout>
+#include <QSpacerItem>
+#include <QList>
+#include <QFileDialog>
 
-#include <socket/control.h>
-#include <socket/socketcontrol.h>
+#include "socket/control.h"
+#include "socket/socketcontrol.h"
+#include "database/sqlitecontrol.h"
+#include "customUI/longbutton.h"
 
 namespace Ui {
 class DetailedInfoPage;
@@ -17,22 +25,36 @@ class DetailedInfoPage : public QWidget
     Q_OBJECT
 
 public:
-    explicit DetailedInfoPage(Control *ctrl, QWidget *parent = nullptr);
-    void setCurrentPage(int index);
+    explicit DetailedInfoPage(Control *ctrl, SqliteControl *sqlite, QWidget *parent = nullptr);
+    void setCurrentPage(int index, QString userName);
     int getCurrentPage();
     ~DetailedInfoPage();
+
+private:
+    void setAllInfo();
 
 signals:
     void sigBackToMine();
 
 private slots:
     void on_btn_cancle_clicked();
+    void onToModifyPage(QString btnNameText);
 
 private:
     Ui::DetailedInfoPage *ui;
     Control *ctrl;
+    SqliteControl *sqlite;
     QTabWidget *tab_wdiget;
-//    int currentPage = 0;//标识当前页面0：allInfo 1:modifyInfo 2:setup
+    QLabel *lb_tabTitle;
+    QToolButton *btn_save;
+    QList<QString> mineData;
+
+    LongButton * lbtn_image;
+    LongButton * lbtn_userName;
+    LongButton * lbtn_number;
+    LongButton * lbtn_address;
+    LongButton * lbtn_personalSignature;
+    LongButton * lbtn_phone;
 };
 
 #endif // DETAILEDINFOPAGE_H
