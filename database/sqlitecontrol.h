@@ -45,6 +45,8 @@ public:
     void closeDatabase(){m_DataBase.close();}
     bool isExistTable(QString table);
     QString getDatabaseName();
+    bool update(QString tableName,QString conditionFieldName,QString condeitonValue,
+                QString modifyFieldName,QString modifyValue);
 //    bool importTxtForChatInfo();
 private:
     QSqlDatabase m_DataBase;

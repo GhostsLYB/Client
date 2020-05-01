@@ -381,6 +381,29 @@ QString SqliteControl::getDatabaseName()
     return databaseName;
 }
 
+bool SqliteControl::update(QString tableName, QString conditionFieldName,
+                           QString condeitonValue, QString modifyFieldName, QString modifyValue)
+{
+    if (!m_DataBase.open()) {
+            return false;
+    }
+    QString sql = QString("update %1 set %2 = '%3' where %4 = '%5'")
+            .arg(tableName)
+            .arg(modifyFieldName)
+            .arg(modifyValue)
+            .arg(conditionFieldName)
+            .arg(condeitonValue);
+    QSqlQuery query(m_DataBase);
+    bool success = query.exec(sql);
+    if (!success) {
+        QSqlError lastError = query.lastError();
+        QString err = lastError.driverText();
+        qDebug() << "insert data error: " << err;
+        return false;
+    }
+    return true;
+}
+
 //bool SqliteControl::importTxtForChatInfo()
 //{
 //    if(!m_DataBase.isOpen())

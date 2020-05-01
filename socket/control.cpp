@@ -11,12 +11,24 @@ Control::Control(QObject *parent) :
     recvSize(0)
 {
     sock = new SocketControl(this);
+//    connect(this,&Control::sigDeleteSock,[](QTcpSocket* sock){delete sock;});
 }
 
 //创建一个新的套接字用于收发文件
 QTcpSocket * Control::createSocket()
 {
     return sock->createSocket();
+}
+
+void Control::createSockAndSend(QString filePath)
+{
+    //创建一个用于发送filePath文件的sock,并加入fileSockMap中
+    //发送完成后从fileSockMap中删除并delete
+    QTcpSocket * fileSock = createSocket();
+    fileSockMap.insert(filePath,fileSock);
+    connect(fileSock, &QTcpSocket::connected, this, &Control::onFileSockConnected);
+//    connect(fileSock, &QTcpSocket::disconnected,this, &Control::onFileSockDisconnected);
+    fileSock->connectToHost("39.105.105.251", 5188);
 }
 
 void Control::sendFile(QTcpSocket ** sock, QString filePath)
@@ -54,6 +66,7 @@ void Control::sendFile(QTcpSocket ** sock, QString filePath)
         data = file.read(4096);
         (*sock)->write(data);//客户端长连接套接字，应该是短链接套接字
     }
+    (*sock)->disconnectFromHost();
 //    delete (*sock);
 }
 
@@ -142,8 +155,35 @@ void Control::onRead()        //读取消息长度len和消息类型flag后交�
     int flag = bflag.toInt();qDebug()<<"flag = "<<flag;
     QString msg = bta.remove(0, 4);
     processResponse(flag, msg);
-
 }
+
+void Control::onFileSockConnected()
+{
+    //从fileSockMap中找到该套接字关联的文件路径，移除
+    QTcpSocket * sock = qobject_cast<QTcpSocket*>(sender());
+    QString filePath = "";
+    QMap<QString,QTcpSocket*>::iterator iter = fileSockMap.begin();
+    for (; iter != fileSockMap.end(); iter++) {
+        if(iter.value() == sock){
+            filePath = iter.key();
+            fileSockMap.erase(iter);
+            break;
+        }
+    }
+    if(filePath == "")
+        qDebug() << "send file path is null";
+    //发送文件
+    sendFile(&sock,filePath);
+    //删除对象
+//    delete sock;
+}
+
+//void Control::onFileSockDisconnected()
+//{
+//    QTcpSocket * sock = qobject_cast<QTcpSocket*>(sender());
+////    if(sock != nullptr)
+////        emit sigDeleteSock(sock);
+//}
 
 bool Control::processRegisterMsg(QString & msg)
 {

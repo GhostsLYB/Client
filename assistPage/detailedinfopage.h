@@ -6,6 +6,7 @@
 #include <QTabBar>
 #include <QToolButton>
 #include <QLabel>
+#include <QLineEdit>
 #include <QLayout>
 #include <QSpacerItem>
 #include <QList>
@@ -40,6 +41,8 @@ private slots:
     void on_btn_cancle_clicked();
     void onToModifyPage(QString btnNameText);
 
+    void on_btn_save_clicked();
+
 private:
     Ui::DetailedInfoPage *ui;
     Control *ctrl;
@@ -48,13 +51,16 @@ private:
     QLabel *lb_tabTitle;
     QToolButton *btn_save;
     QList<QString> mineData;
-
+    //allInfo page
     LongButton * lbtn_image;
     LongButton * lbtn_userName;
     LongButton * lbtn_number;
     LongButton * lbtn_address;
     LongButton * lbtn_personalSignature;
     LongButton * lbtn_phone;
+    //modify page
+    QLabel * lb_tip;
+    QLineEdit * le_infoInput;
 };
 
 #endif // DETAILEDINFOPAGE_H
