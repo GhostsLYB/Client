@@ -33,6 +33,8 @@ SOURCES += \
         customUI/homepagemenu.cpp \
         customUI/homepagetop.cpp \
         customUI/longbutton.cpp \
+        customUI/soundrecordbutton.cpp \
+        customUI/textchatinfoitem.cpp \
         customWidget/widgetfriend.cpp \
         customWidget/widgetmain.cpp \
         customWidget/widgetmine.cpp \
@@ -54,6 +56,8 @@ HEADERS += \
         customUI/homepagemenu.h \
         customUI/homepagetop.h \
         customUI/longbutton.h \
+        customUI/soundrecordbutton.h \
+        customUI/textchatinfoitem.h \
         customWidget/widgetfriend.h \
         customWidget/widgetmain.h \
         customWidget/widgetmine.h \
@@ -74,6 +78,8 @@ FORMS += \
         customUI/homepagemenu.ui \
         customUI/homepagetop.ui \
         customUI/longbutton.ui \
+        customUI/soundrecordbutton.ui \
+        customUI/textchatinfoitem.ui \
         customWidget/widgetfriend.ui \
         customWidget/widgetmain.ui \
         customWidget/widgetmine.ui \

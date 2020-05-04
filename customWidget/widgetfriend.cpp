@@ -19,7 +19,7 @@ WidgetFriend::WidgetFriend(QWidget *parent) :
     nameList << "root" << "ghost";
     for (int i = 0; i < 2; i++) {
         QListWidgetItem * item = new QListWidgetItem(listWidget);
-        item->setSizeHint(QSize(0,120));
+        item->setSizeHint(QSize(0,50));
         FriendListItem * itemWidget = new FriendListItem(listWidget);   //自定义QListWidgetItem
         itemWidget->setIndex(i);
         //设置头像图片，名称（需要完善）

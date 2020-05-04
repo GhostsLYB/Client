@@ -1,5 +1,6 @@
 #include "chatpage.h"
 #include "ui_chatpage.h"
+#include <QCursor>
 
 ChatPage::ChatPage(Control * parentCtrl,QWidget *parent) :
     QWidget(parent),
@@ -12,18 +13,29 @@ ChatPage::ChatPage(Control * parentCtrl,QWidget *parent) :
     lb_friendName = ui->lb_friendName;
     btn_info = ui->btn_info;
     listWidget = ui->listWidget;
+    listWidget->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    listWidget->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     te_sendBox = ui->te_sendBox;
+    te_sendBox->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    te_sendBox->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     btn_send = ui->btn_send;
+    btn_send->hide();    //pte_sendBox为空时发送按钮不显示
+    btn_voiceSend = ui->btn_voiceSend;
+    btn_expression = ui->btn_expression;
+    btn_otherSend = ui->btn_otherSend;
+    btn_soundRecord = ui->btn_soundRecord;
+    btn_soundRecord->hide();        //录音按钮隐藏
 
-    btn_send->setEnabled(false);    //pte_sendBox为空时发送按钮不可用
     //控制发送按钮的使能状态
     connect(te_sendBox,&QTextEdit::textChanged,[&](){
        if(te_sendBox->toPlainText().isEmpty())
        {
-           btn_send->setEnabled(false);
+           btn_send->hide();
+           btn_otherSend->show();
        }
        else{
-           btn_send->setEnabled(true);
+           btn_send->show();
+           btn_otherSend->hide();
        }
     });
     //连接发送按钮的点击信号和槽函数
@@ -42,17 +54,27 @@ void ChatPage::onSend()
     sprintf(temp,"%4d",qstrlen(lb_friendName->text().toUtf8().data()));
     strTextEdit.append(temp);
     strTextEdit.append(lb_friendName->text());      //追加接受用户名
-    sprintf(temp,"%4d",qstrlen(te_sendBox->toPlainText().toUtf8().data()));
+//    sprintf(temp,"%4d",qstrlen(te_sendBox->toPlainText().toUtf8().data()));
+    QString msg = ui->te_sendBox->toHtml();
+    qDebug() << "sendBox->toHtml = [" << msg << "]";
+    msg.replace("\"","&quot;");//将单引号和双引号替换
+    qDebug() << msg;
+    msg.replace("'","&apos;");
+    qDebug() << msg;
+    sprintf(temp,"%4d",qstrlen(msg.toUtf8().data()));
     strTextEdit.append(temp);                       //追加消息长度
-    strTextEdit.append(te_sendBox->toPlainText());  //追加消息
+//    strTextEdit.append(te_sendBox->toPlainText());  //追加消息
+    strTextEdit.append(msg);
     sprintf(temp,"%4d",qstrlen(strTextEdit.toUtf8().data()));
     sendMsg.append(temp);
     sendMsg.append(strTextEdit);
     qDebug() << "send message : " << sendMsg;
     if(ctrl->sock->send(sendMsg))   //如果发送成功则将消息添加到消息窗口listWidget中
     {
-        addToListWidget(lb_friendName->text(),3,"send",te_sendBox->toPlainText(),"",QDateTime::currentDateTime().toString("hh:mm"));
-        ChatInfo chatInfo = {lb_friendName->text(),3,"send",te_sendBox->toPlainText(),"",QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss")};
+        addToListWidget(lb_friendName->text(),3,"send",te_sendBox->toHtml(),"",
+                        QDateTime::currentDateTime().toString("hh:mm"));
+        ChatInfo chatInfo = {lb_friendName->text(),3,"send",msg,"",
+                             QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss")};
         emit sigSend(chatInfo);
     }
     te_sendBox->clear();
@@ -69,25 +91,38 @@ void ChatPage::onRecvMessage(QString msg)
     msg.remove(0,len.toUtf8().toInt());
     len = msg.left(4);
     msg.remove(0,4);
-    ChatInfo chatInfo = {peerName,3,"recv",msg,"",QDateTime::currentDateTime().toString()};
+    ChatInfo chatInfo = {peerName,3,"recv",msg,"",
+                         QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss")};
     emit sigRecv(chatInfo);
+    msg.replace("&quot;","\"");//将单引号和双引号替换
+    msg.replace("&apos;","'");
+    qDebug() << "recv html = [" << msg << "]";
     if(lb_friendName->text() == peerName)   //如果当前聊天好友与接收的消息发送用户相同，则添加一天聊天记录
     {
-        QListWidgetItem *item = new QListWidgetItem("recv : "+msg,listWidget);
-        listWidget->addItem(item);
+        addToListWidget(chatInfo.peerName,chatInfo.flag,chatInfo.direction,
+                        chatInfo.word,chatInfo.url,chatInfo.time);
     }
 }
 
 void ChatPage::addToListWidget(const QString &peerName,const int &flag,const QString &dirction,
                                const QString &word,const QString &url,const QString &time)
 {
-    QListWidgetItem * item;
-    if(dirction == "send")
-        item = new QListWidgetItem("send : "+word,listWidget);
-    else {
-        item = new QListWidgetItem("recv : "+word,listWidget);
+    QListWidgetItem *item = new QListWidgetItem(listWidget);
+    item->setFlags(Qt::ItemIsEnabled);
+    item->setSizeHint(QSize(0,50));
+    TextChatInfoItem * itemWidget;
+    QString msg = word;
+    msg.replace("&quot;","\"");//将单引号和双引号替换
+    msg.replace("&apos;","'");
+//    qDebug() << "addToListWidget word = [" << word << "]";
+    if(dirction == "send"){
+        itemWidget = new TextChatInfoItem(listWidget,url,msg);
     }
-    listWidget->addItem(item);
+    else {
+        itemWidget = new TextChatInfoItem(listWidget,url,msg,false);
+    }
+    listWidget->setItemWidget(item,itemWidget);
+    listWidget->setCurrentRow(listWidget->count()-1);
 }
 
 //打开聊天页面时初始化与该用户的聊天记录，读取userName_chatIn表
@@ -105,4 +140,46 @@ void ChatPage::initInfo(QList<ChatInfo> *list)
 ChatPage::~ChatPage()
 {
     delete ui;
+}
+
+void ChatPage::on_btn_voiceSend_clicked()//改为录音输入，发送语音格式
+{
+    qDebug() << "changed send voice mode";
+    if(btn_soundRecord->isHidden()){
+        btn_soundRecord->show();
+        te_sendBox->hide();
+        btn_send->hide();
+        btn_otherSend->show();
+    }
+    else {
+        btn_soundRecord->hide();
+        te_sendBox->show();
+        if(!te_sendBox->toPlainText().isEmpty()){
+            btn_otherSend->hide();
+            btn_send->show();
+        }
+        else {
+            btn_otherSend->show();
+            btn_send->hide();
+        }
+    }
+}
+
+
+
+void ChatPage::on_btn_expression_clicked()
+{
+    qDebug() << "open expression chose page";
+    te_sendBox->append("<img src=\":/icon/app_icon/ghost.png\" />");
+}
+
+
+void ChatPage::on_btn_soundRecord_clicked()
+{
+    qDebug() << "start sound recording";
+}
+
+void ChatPage::on_btn_otherSend_clicked()
+{
+    qDebug() << "open send other file page";
 }

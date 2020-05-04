@@ -15,15 +15,6 @@ AllPageListWidget::AllPageListWidget(QWidget *parent) :
     connect(ctrl->sock->socket(),&QTcpSocket::connected,ctrl->sock,&SocketControl::onConnected);
     connect(ctrl->sock->socket(),&QTcpSocket::disconnected,ctrl->sock,&SocketControl::onDisconnected);
     connect(ctrl->sock->socket(),&QTcpSocket::readyRead,ctrl,&Control::onRead);
-    //home page index = 2
-    homepage = new HomePage(ctrl,this);
-    ui->tab_home->layout()->addWidget(homepage);
-    connect(homepage,&HomePage::sigChatWith,this,&AllPageListWidget::onChatWith);
-    connect(homepage,&HomePage::sigShowUserInfo,this, &AllPageListWidget::onShowUserInfo);
-    connect(homepage,&HomePage::sigExit,[&](){ui->tabWidget->setCurrentIndex(0);});
-    connect(homepage,&HomePage::sigSetMineInfo,this,&AllPageListWidget::onSetMineInfo);
-    connect(this,&AllPageListWidget::sigGetTableDataFinish,homepage,&HomePage::onSetMineInfo);
-    connect(homepage,&HomePage::sigShowAllInfo,this,&AllPageListWidget::onShowAllInfo);
     //login page index = 0
     login = new Login(ctrl);
     ui->tab_login->layout()->addWidget(login);
@@ -33,9 +24,20 @@ AllPageListWidget::AllPageListWidget(QWidget *parent) :
     regist = new Register(ctrl);
     ui->tab_register->layout()->addWidget(regist);
     connect(regist,&Register::sigRegisterCancel,[&](){ui->tabWidget->setCurrentIndex(0);});
+    //home page index = 2
+    homepage = new HomePage(ctrl,this);
+    ui->tab_home->layout()->addWidget(homepage);
+    connect(homepage,&HomePage::sigChatWith,this,&AllPageListWidget::onChatWith);
+    connect(homepage,&HomePage::sigShowUserInfo,this, &AllPageListWidget::onShowUserInfo);
+    connect(homepage,&HomePage::sigExit,[&](){ui->tabWidget->setCurrentIndex(0);});
+    connect(homepage,&HomePage::sigSetMineInfo,this,&AllPageListWidget::onSetMineInfo);
+    connect(this,&AllPageListWidget::sigGetTableDataFinish,homepage,&HomePage::onSetMineInfo);
+    connect(homepage,&HomePage::sigShowAllInfo,this,&AllPageListWidget::onShowAllInfo);
     //chat page index = 3
     chatPage = new ChatPage(ctrl);
     ui->tab_chat->layout()->addWidget(chatPage);
+    ui->tab_chat->layout()->setMargin(0);
+    ui->tab_chat->layout()->setSpacing(0);
     connect(chatPage->btn_back,&QPushButton::clicked,[&](){
         ui->tabWidget->setCurrentIndex(2);
         homepage->setIndex(0);
@@ -100,12 +102,19 @@ void AllPageListWidget::onChatMsgInsert(ChatInfo chatInfo)
 
 void AllPageListWidget::onLoginSuccessed(QString userName)
 {
+//    登陆成功前要同步服务器数据
+//    sqlite->importTxtForChatInfo();
+//    登陆成功后要从数据库中读取数据（最最近聊天，好友列表）显示
     ui->tabWidget->setCurrentIndex(2);
     homepage->setIndex(0);
     homepage->setTopShow();
     homepage->setUserName(userName);
-    sqlite->setDatabase(userName);
-//    sqlite->importTxtForChatInfo();
+    sqlite->setDatabase(userName);  //连接本地数据库
+    //读取表recent_chatInfo所有内容显示在最近聊天界面
+    QVector<QList<QString>> recentChatInfo;
+    sqlite->getRecentChatInfo(userName,recentChatInfo); //读取所有最近聊天信息
+    homepage->cleanRecentChatItems();                   //清空原有项
+    homepage->addRecentChatItems(recentChatInfo);       //添加所有新项
     qDebug() << "login user:"<<userName;//登陆成功
 }
 

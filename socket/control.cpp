@@ -115,7 +115,7 @@ void Control::recvFile(QTcpSocket **sock){
 //服务器响应消息处理函数
 void Control::processResponse(int flag, QString &msg)    //msg格式 ：信息段+信息段。。。
 {
-    //根据不同flag调用processMsg.h中的函数 并触发响应的信号
+    //根据不同flag调用processMsg.h中的函数解析数据 并触发响应的信号
     switch (flag) {
     case 1: {
         bool isSuccessed = processRegisterMsg(msg);

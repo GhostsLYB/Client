@@ -91,7 +91,7 @@ bool SqliteControl::createTable(QString tableName)
                                     "peerName  VARCHAR(40)     NOT NULL, "
                                     "flag      INTEGER         NOT NULL, "
                                     "direction VARCHAR(20)     NOT NULL,"
-                                    "word      VARCHAR(1024)   ,"
+                                    "word      VARCHAR(2048)   ,"
                                     "url       VARCHAR(100)    ,"
                                     "time      VARCHAR(100))    ").arg(tableName);
     }
@@ -111,7 +111,7 @@ bool SqliteControl::createTable(QString tableName)
                                     "id             INTEGER         PRIMARY KEY AUTOINCREMENT,"
                                     "userName       VARCHAR(50)     NOT NULL,"
                                     "friendName     VARCHAR(50)     NOT NULL,"
-                                    "lastMessage    VARCHAR(1024)   NOT NULL DEFAULT '',"
+                                    "lastMessage    VARCHAR(2048)   NOT NULL DEFAULT '',"
                                     "lastTime       VARCHAR(50)     NOT NULL DEFAULT '',"
                                     "voice          VARCHAR(10)     DEFAULT '')");
     }
@@ -366,6 +366,41 @@ bool SqliteControl::getTableData(QString tableName, QString userName, QList<QStr
             else {
                 return false;
             }
+        }
+        return true;
+    }
+    else
+        return false;
+}
+
+bool SqliteControl::getRecentChatInfo(QString userName, QVector<QList<QString>> &data)
+{
+    if (!m_DataBase.open()) {
+            return false;
+    }
+    QString selectString = QString("select imageUrl,friendName,lastMessage,lastTime,voice "
+                                   "from recent_chatList,user_info "
+                                   "where recent_chatList.friendName = user_info.username "
+                                   "and recent_chatList.userName = '%1' "
+                                   "order by lastTime desc").arg(userName);
+    qDebug() << "sql sentence = " << selectString;
+    QSqlQuery query(m_DataBase);
+    bool success = query.exec(selectString);
+    if(success)
+    {
+        QSqlRecord rec = query.record();
+        MyFriend myFriend;
+        ChatInfo chatInfo;
+        data.clear();
+        while (query.next())
+        {
+            QList<QString> lData;
+            lData << query.value(0).toString();
+            lData << query.value(1).toString();
+            lData << query.value(2).toString();
+            lData << query.value(3).toString();
+            lData << query.value(4).toString();
+            data.append(lData);
         }
         return true;
     }

@@ -5,5 +5,12 @@
         <file>icon/head_picture/1.png</file>
         <file>icon/head_picture/2.png</file>
         <file>icon/uploading.png</file>
+        <file>icon/smallIcon.png</file>
+        <file>icon/app_icon/add.png</file>
+        <file>icon/app_icon/ghost.png</file>
+        <file>icon/app_icon/pause.png</file>
+        <file>icon/app_icon/start.png</file>
+        <file>icon/app_icon/threePoint.png</file>
+        <file>icon/app_icon/voiceInput.png</file>
     </qresource>
 </RCC>

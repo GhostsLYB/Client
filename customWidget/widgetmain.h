@@ -19,12 +19,15 @@ class WidgetMain : public QWidget
 public:
     explicit WidgetMain(QWidget *parent = nullptr);
     ~WidgetMain();
+    int getItemNum(){return listWidget->count();}
 
 signals:
     void sigItemClicked(QString);
 
 public slots:
-//    void onAddFriendItem(QString image, int msgNum,QString friendName,QString msg);
+    void onAddFriendItem(QString image,QString msgNum,QString friendName,
+                         QString lastMsg,QString lastTime,QString voice);
+    void onCleanAllItems();
     void onItemClicked(QString);
 
 private:

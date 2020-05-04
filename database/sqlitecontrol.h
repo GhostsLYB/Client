@@ -11,6 +11,7 @@
 #include <QtSql/QSqlError>
 #include <QVariant>
 #include <QList>
+#include <QVector>
 #include <QDebug>
 #include <QSqlRecord>
 
@@ -42,6 +43,7 @@ public:
     bool getData(QString tableName, QString userName, MyFriend * mData, ChatInfo * cData);
     bool getDataList(QString tableName, QList<MyFriend> * mList, QList<ChatInfo> * cList, QString userName = nullptr);
     bool getTableData(QString tableName, QString userName, QList<QString> &data);
+    bool getRecentChatInfo(QString userName, QVector<QList<QString>> &data);
     void closeDatabase(){m_DataBase.close();}
     bool isExistTable(QString table);
     QString getDatabaseName();

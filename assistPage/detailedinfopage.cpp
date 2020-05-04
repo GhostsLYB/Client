@@ -63,16 +63,20 @@ DetailedInfoPage::DetailedInfoPage(Control *ctrl, SqliteControl *sqlite, QWidget
 
 }
 
-void DetailedInfoPage::setCurrentPage(int index, QString userName)
+void DetailedInfoPage::setCurrentPage(int index, QString userName, bool isReFresh)
 {
     tab_wdiget->setCurrentIndex(index);
     if(index == 0){
         ui->btn_save->hide();
         lb_tabTitle->setText("个人信息");
-        QString oldUserName = lbtn_userName->getBtnInfoText();
-        if(strncmp(userName.toUtf8().data(),oldUserName.toUtf8().data(),qstrlen(userName.toUtf8().data())) != 0){
+        //需要刷新(默认不刷新)或者userName与currUserName不同时，需要重新查询数据
+        if(isReFresh ||strncmp(userName.toUtf8().data(),
+                   currUserName.toUtf8().data(),
+                   qstrlen(userName.toUtf8().data())) != 0)
+        {
+            currUserName = userName;
             sqlite->getTableData("user_info", userName, mineData);
-            setAllInfo();
+            initAllInfoPage();
         }
     }
     else if(index == 1){
@@ -85,7 +89,7 @@ void DetailedInfoPage::setCurrentPage(int index, QString userName)
     }
 }
 
-void DetailedInfoPage::setAllInfo()
+void DetailedInfoPage::initAllInfoPage()
 {
     //mineData: userName number imagepath person address time
     if(mineData.size() != 0){
@@ -130,12 +134,17 @@ void DetailedInfoPage::onToModifyPage(QString btnNameText)
         QString sendStr = "";
         char sendbuf[100] = {0};
         //发送更改信息请求，修改服务器数据库(修改完成后需要又反馈信息)
-        //修改数据的请求信息格式 总长+类型+更改类型+更改信息长度+更改信息
-        QString imageName = imagePath.mid(imagePath.lastIndexOf('\\')+1);
+        //修改数据的请求信息格式 总长+类型+更改类型+用户名长+用户名+更改信息长度+更改信息
+        QString imageName = imagePath.mid(imagePath.lastIndexOf('/')+1);
         int nameSize = qstrlen(imageName.toUtf8().data());
-        int totalSize = 12 + nameSize;
-        sprintf(sendbuf, "%4d%4d%4d%4d%s", totalSize,6,0,nameSize,imageName.toUtf8().data());
+        int totalSize = 16 + nameSize + qstrlen(mineData[0].toUtf8().data());
+        sprintf(sendbuf, "%4d%4d%4d%4d%s%4d%s", totalSize,6,0,
+                qstrlen(mineData[0].toUtf8().data()),
+                mineData[0].toUtf8().data(),
+                nameSize,imageName.toUtf8().data());
         sendStr = QString("%1").arg(sendbuf);
+        qDebug() << sendbuf;
+        qDebug() << sendStr;
         ctrl->sock->send(sendStr);
         //服务器信息修改完成后再修改本地数据库（期间应提示正在上传（需要完善））
         sqlite->update("user_info","username",mineData[0],"imageUrl",imagePath);
@@ -200,36 +209,45 @@ void DetailedInfoPage::on_btn_save_clicked()
     char sendbuf[1024] = {0};
     if(title == "更改名字"){
         modifyField = "username";
-        modifyFlag = 0;
+        currUserName = le_infoInput->text();
+        modifyFlag = 1;
     }
     else if(title == "Set Number"){
         modifyField = "number";
-        modifyFlag = 1;
+        modifyFlag = 2;
     }
     else if(title == "更改地址"){
         modifyField = "address";
-        modifyFlag = 2;
+        modifyFlag = 3;
     }
     else if(title == "更改签名"){
         modifyField = "personalSignature";
-        modifyFlag = 3;
+        modifyFlag = 4;
     }
     else if(title == "更改电话"){
         tableName = "users";
         modifyField = "phone";
-        modifyFlag = 4;
+        modifyFlag = 5;
     }
     else {
         return;
     }
     //发送修改信息请求
-    sprintf(sendbuf,"%4d%4d%4d%4d%s",12+infoSize,6,modifyFlag,infoSize,info.toUtf8().data());
+    sprintf(sendbuf,"%4d%4d%4d%4d%s%4d%s",
+            16+qstrlen(mineData[0].toUtf8().data())+qstrlen(info.toUtf8().data()),
+            6,modifyFlag,
+            qstrlen(mineData[0].toUtf8().data()),
+            mineData[0].toUtf8().data(),
+            infoSize,info.toUtf8().data());
     QString msg = QString(sendbuf);
+    qDebug() << msg;
     ctrl->sock->send(msg);
     //修改本地数据库
     bool res = sqlite->update(tableName,"username",mineData[0],modifyField,info);
+    if(modifyField == "username")//用户名users表也需要更改
+        sqlite->update("users","username",mineData[0],modifyField,info);
     if(!res)
         qDebug() << "mine info modify fail";
-    //返回到mine界面
-    ui->tabWidget->setCurrentIndex(0);
+    //返回到mine界面,有修改信息，需要刷新显示信息
+    setCurrentPage(0, currUserName, true);
 }

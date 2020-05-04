@@ -14,7 +14,10 @@ class CustomListWidgetItem : public QWidget
     Q_OBJECT
 
 public:
-    explicit CustomListWidgetItem(QWidget *parent = nullptr);
+    explicit CustomListWidgetItem(QWidget *parent = nullptr,QString imagePath = "",
+                                  QString newMsgNum = "",QString friendName = "",
+                                  QString laseTime = "",QString lastMsg = "",
+                                  QString voiceIcon = "");
     ~CustomListWidgetItem();
     int getIndex(){return index;}
     void setIndex(int i){index = i;}
@@ -29,13 +32,13 @@ signals:
 
 private:
     Ui::CustomListWidgetItem *ui;
-    int index;
+    int index = 0;
     bool isMousePressed = false;
     QLabel * lb_image;
-    QLabel * lb_messageNumber;
+    QLabel * lb_newMsgNum;
     QLabel * lb_friendName;
     QLabel * lb_lastTime;
-    QLabel * lb_lastMessage;
+    QLabel * lb_lastMsg;
     QLabel * lb_voiceIcon;
 };
 

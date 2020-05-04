@@ -110,10 +110,10 @@ void Login::onLoginResponse(QString msg)
         emit sigLoginSuccessed(ui->le_username->text());
     }
     else if(msg.compare("no") == 0){
-        msg = "User "+ui->le_username->text()+" not exist!";
+        msg = "Incorrect password!";
     }
     else if(msg.compare("null") == 0)
-        msg = "Incorrect password!";
+        msg = "User "+ui->le_username->text()+" not exist!";
     else if(msg.compare("online") == 0)
         msg = "User "+ui->le_username->text()+" is online";
     else {

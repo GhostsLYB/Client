@@ -27,12 +27,12 @@ class DetailedInfoPage : public QWidget
 
 public:
     explicit DetailedInfoPage(Control *ctrl, SqliteControl *sqlite, QWidget *parent = nullptr);
-    void setCurrentPage(int index, QString userName);
+    void setCurrentPage(int index, QString userName, bool isReFresh = false);
     int getCurrentPage();
     ~DetailedInfoPage();
 
 private:
-    void setAllInfo();
+    void initAllInfoPage();
 
 signals:
     void sigBackToMine();
@@ -51,6 +51,7 @@ private:
     QLabel *lb_tabTitle;
     QToolButton *btn_save;
     QList<QString> mineData;
+    QString currUserName = "";
     //allInfo page
     LongButton * lbtn_image;
     LongButton * lbtn_userName;

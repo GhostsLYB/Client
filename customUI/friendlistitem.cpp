@@ -6,15 +6,8 @@ FriendListItem::FriendListItem(QWidget *parent) :
     ui(new Ui::FriendListItem)
 {
     ui->setupUi(this);
-    QHBoxLayout * hLayoutWidget = new QHBoxLayout(this);//整体itemWidget布局
-    lb_image = new QLabel(tr("好友头像"),this);
-    lb_image->setObjectName(tr("lb_image"));
-    lb_friendName = new QLabel(tr("好友名称"), this);
-    lb_friendName->setObjectName(tr("lb_friendName"));
-    hLayoutWidget->addWidget(lb_image);
-    hLayoutWidget->addWidget(lb_friendName);
-    hLayoutWidget->setStretch(0, 1);
-    hLayoutWidget->setStretch(1, 10);
+    lb_image = ui->lb_image;
+    lb_friendName = ui->lb_friendName;
 }
 
 void FriendListItem::setPicture(QString path){

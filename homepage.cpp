@@ -70,7 +70,7 @@ void HomePage::onChatItemClicked(QString friendName)
     emit sigChatWith(friendName);
 }
 
-//通讯界面点击好友项信号的槽函数
+//通讯录界面点击好友项信号的槽函数
 void HomePage::onFriendItemClicked(QString friendName)
 {
     qDebug() << "show user info " << friendName;
@@ -99,6 +99,21 @@ void HomePage::setTopShow()
 {
     if(ui->wid_homePageTop->isHidden())
         ui->wid_homePageTop->show();
+}
+
+void HomePage::addRecentChatItems(QVector<QList<QString> > &datas)
+{
+    //将数据datas的每一项添加为一个最近聊天好友项
+    for(int i = 0; i < datas.size(); i++)
+    {
+        QList<QString> data = datas[i];
+        wid_main->onAddFriendItem(data[0],"",data[1],data[2],data[3],data[4]);
+    }
+}
+
+void HomePage::cleanRecentChatItems()
+{
+    wid_main->onCleanAllItems();
 }
 
 void HomePage::on_btn_exit_clicked()

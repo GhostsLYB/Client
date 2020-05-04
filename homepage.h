@@ -4,6 +4,9 @@
 #include <QWidget>
 #include <QTabBar>
 #include <QFileDialog>
+#include <QVector>
+#include <QList>
+
 #include "customWidget/widgetmain.h"
 #include "customWidget/widgetfriend.h"
 #include "customWidget/widgetmine.h"
@@ -25,6 +28,8 @@ public:
     void setTopShow();
     void setUserName(QString name){userName = name;}
     QString getUserName(){return userName;}
+    void addRecentChatItems(QVector<QList<QString>> &datas);
+    void cleanRecentChatItems();
 
 signals:
     void sigExit();

@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QBoxLayout>
 #include <QLabel>
+#include <QLine>
 
 namespace Ui {
 class FriendListItem;
