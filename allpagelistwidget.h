@@ -12,6 +12,8 @@
 #include "database/sqlitecontrol.h"
 #include "assistPage/detailedinfopage.h"
 
+#include "globaldate.h"
+
 namespace Ui {
 class AllPageListWidget;
 }

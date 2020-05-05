@@ -11,6 +11,8 @@
 #include "socket/control.h"
 #include "database/sqlitecontrol.h"
 #include "customUI/textchatinfoitem.h"
+#include "customUI/soundrecordbutton.h"
+#include "globaldate.h"
 
 namespace Ui {
 class ChatPage;
@@ -33,7 +35,8 @@ signals:
     void sigRecv(ChatInfo);
 
 public slots:
-    void onRecvMessage(QString);
+    void onRecvMessage(QString msg, int flag);
+    void onRecordFinish(QString);
 
 private:
     void onSend();
@@ -49,7 +52,7 @@ public:
     QToolButton * btn_voiceSend;
     QToolButton * btn_expression;
     QToolButton * btn_otherSend;
-    QToolButton * btn_soundRecord;
+    SoundRecordButton * btn_soundRecord;
 
 private slots:
     void on_btn_voiceSend_clicked();
@@ -63,7 +66,8 @@ private slots:
 private:
     Ui::ChatPage *ui;
     Control      *ctrl = nullptr;
-
+    int msgType = 3;    //发送消息的类型，默认为3表示文字消息
+    QString sendFilePath = "";
 };
 
 #endif // CHATPAGE_H

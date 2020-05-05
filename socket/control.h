@@ -25,7 +25,7 @@ public:
 signals:
     void sigRegisterResponse(bool);
     void sigLoginResponse(QString);
-    void sigRecvMessage(QString);
+    void sigRecvMessage(QString msg, int flag);
 //    void sigDeleteSock(QTcpSocket*);
 private:
     void processResponse(int, QString&);

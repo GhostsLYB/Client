@@ -108,6 +108,8 @@ void HomePage::addRecentChatItems(QVector<QList<QString> > &datas)
     {
         QList<QString> data = datas[i];
         wid_main->onAddFriendItem(data[0],"",data[1],data[2],data[3],data[4]);
+        //将数据保存到GlobalDate
+        GlobalDate::insertUserImageUrl(data[1],data[0]);
     }
 }
 

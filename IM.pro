@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui network sql
+QT       += core gui network sql multimedia
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -39,6 +39,7 @@ SOURCES += \
         customWidget/widgetmain.cpp \
         customWidget/widgetmine.cpp \
         database/sqlitecontrol.cpp \
+        globaldate.cpp \
         homepage.cpp \
         main.cpp \
         login.cpp \
@@ -62,6 +63,7 @@ HEADERS += \
         customWidget/widgetmain.h \
         customWidget/widgetmine.h \
         database/sqlitecontrol.h \
+        globaldate.h \
         homepage.h \
         login.h \
         register.h \

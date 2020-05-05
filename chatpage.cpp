@@ -2,12 +2,12 @@
 #include "ui_chatpage.h"
 #include <QCursor>
 
-ChatPage::ChatPage(Control * parentCtrl,QWidget *parent) :
+ChatPage::ChatPage(Control * parentCtrl, QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::ChatPage)
+    ui(new Ui::ChatPage),
+    ctrl(parentCtrl)
 {
     ui->setupUi(this);
-    ctrl = parentCtrl;
     connect(ctrl,&Control::sigRecvMessage,this,&ChatPage::onRecvMessage);
     btn_back = ui->btn_back;
     lb_friendName = ui->lb_friendName;
@@ -23,8 +23,9 @@ ChatPage::ChatPage(Control * parentCtrl,QWidget *parent) :
     btn_voiceSend = ui->btn_voiceSend;
     btn_expression = ui->btn_expression;
     btn_otherSend = ui->btn_otherSend;
-    btn_soundRecord = ui->btn_soundRecord;
-    btn_soundRecord->hide();        //录音按钮隐藏
+    btn_soundRecord = qobject_cast<SoundRecordButton*>(ui->btn_soundRecord);
+    connect(btn_soundRecord,&SoundRecordButton::sigRecordFinish,this,&ChatPage::onRecordFinish);
+    btn_soundRecord->hide();        //录音按钮隐藏（此时msgType默认为0表示文字消息）
 
     //控制发送按钮的使能状态
     connect(te_sendBox,&QTextEdit::textChanged,[&](){
@@ -45,35 +46,51 @@ ChatPage::ChatPage(Control * parentCtrl,QWidget *parent) :
 
 void ChatPage::onSend()
 {
-    //发送文字消息的数据格式：[总长][类型3][接收用户名长][接收用户名][消息长度][消息]
+    //发送文字消息的数据格式：[总长][消息类型3][信息类型][接收用户名长][接收用户名][消息长度][消息]
+    //消息类型为3表示转发 信息类型：3文字 7语音 8图片 9视频 10文件
     QString strTextEdit = "";
     QString sendMsg = "";
-    char temp[1024] = {0};
-    sprintf(temp,"%4d",3);
-    strTextEdit.append(temp);                       //追加类型
+    char temp[2048] = {0};
+    sprintf(temp,"%4d",msgType);
+    strTextEdit.append(temp);                       //追加消息类型msgType
+//    sprintf(temp,"%4d",msgType);
+//    strTextEdit.append(temp);                       //追加信息类型（3表示文字信息）
     sprintf(temp,"%4d",qstrlen(lb_friendName->text().toUtf8().data()));
-    strTextEdit.append(temp);
+    strTextEdit.append(temp);                       //用户名长度
     strTextEdit.append(lb_friendName->text());      //追加接受用户名
-//    sprintf(temp,"%4d",qstrlen(te_sendBox->toPlainText().toUtf8().data()));
-    QString msg = ui->te_sendBox->toHtml();
-    qDebug() << "sendBox->toHtml = [" << msg << "]";
-    msg.replace("\"","&quot;");//将单引号和双引号替换
-    qDebug() << msg;
-    msg.replace("'","&apos;");
-    qDebug() << msg;
-    sprintf(temp,"%4d",qstrlen(msg.toUtf8().data()));
-    strTextEdit.append(temp);                       //追加消息长度
-//    strTextEdit.append(te_sendBox->toPlainText());  //追加消息
-    strTextEdit.append(msg);
+    QString msg;
+    QString showInfo;
+    if(msgType == 3){       //文本消息为textEdit中的文本
+        sendFilePath = "";  //文字消息时
+        showInfo = te_sendBox->toHtml();
+        msg = ui->te_sendBox->toHtml();
+    //    qDebug() << "sendBox->toHtml = [" << msg << "]";
+        msg.replace("\"","&quot;");//将单引号和双引号替换
+    //    qDebug() << msg;
+        msg.replace("'","&apos;");
+    //    qDebug() << msg;
+        sprintf(temp,"%4d",qstrlen(msg.toUtf8().data()));
+        strTextEdit.append(temp);                       //追加消息长度
+    //    strTextEdit.append(te_sendBox->toPlainText());  //追加消息
+        strTextEdit.append(msg);
+    }
+    else if (msgType == 7) {    //语音消息为音频文件路径 sendFilePath
+        msg = sendFilePath;
+        showInfo = "";
+        sprintf(temp,"%4d",qstrlen(sendFilePath.toUtf8().data()));
+        strTextEdit.append(temp);               //追加文件名长度
+        strTextEdit.append(sendFilePath);       //追加文件名
+    }
+
     sprintf(temp,"%4d",qstrlen(strTextEdit.toUtf8().data()));
-    sendMsg.append(temp);
-    sendMsg.append(strTextEdit);
+    sendMsg.append(temp);           //设置四字节首部的消息长度
+    sendMsg.append(strTextEdit);    //追加消息
     qDebug() << "send message : " << sendMsg;
     if(ctrl->sock->send(sendMsg))   //如果发送成功则将消息添加到消息窗口listWidget中
     {
-        addToListWidget(lb_friendName->text(),3,"send",te_sendBox->toHtml(),"",
-                        QDateTime::currentDateTime().toString("hh:mm"));
-        ChatInfo chatInfo = {lb_friendName->text(),3,"send",msg,"",
+        addToListWidget(lb_friendName->text(),msgType,"send",msg,"",
+                    QDateTime::currentDateTime().toString("hh:mm"));
+        ChatInfo chatInfo = {lb_friendName->text(),msgType,"send",msg,sendFilePath,
                              QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss")};
         emit sigSend(chatInfo);
     }
@@ -81,45 +98,80 @@ void ChatPage::onSend()
 }
 
 //处理来自其他人的消息 msg格式：对方用户名长度+对方用户名+消息长度+消息
-void ChatPage::onRecvMessage(QString msg)
+void ChatPage::onRecvMessage(QString msg, int flag)
 {
-    //msg格式："   4root   9你好吗"
+    //msg文字格式："   4root   9你好吗"
+    //语音格式："   4root   8filePath"
     qDebug() << "chatPage recv :"<<msg;
-    QString len = msg.left(4);
+    QString len = msg.left(4);              //对方用户名长度
     msg.remove(0,4);
-    QString peerName = msg.left(len.toUtf8().toInt());
+    QString peerName = msg.left(len.toUtf8().toInt());  //对方名
     msg.remove(0,len.toUtf8().toInt());
-    len = msg.left(4);
-    msg.remove(0,4);
-    ChatInfo chatInfo = {peerName,3,"recv",msg,"",
+    len = msg.left(4);                      //消息长度
+    msg.remove(0,4);                        //此时msg为消息
+    QString wordMsg = "";
+    QString url = "";
+    if(flag == 3)
+        wordMsg = msg;
+    else if (flag == 7) {
+        url = msg;
+    }
+    ChatInfo chatInfo = {peerName,flag,"recv",wordMsg,url,
                          QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss")};
     emit sigRecv(chatInfo);
+
     msg.replace("&quot;","\"");//将单引号和双引号替换
     msg.replace("&apos;","'");
     qDebug() << "recv html = [" << msg << "]";
-    if(lb_friendName->text() == peerName)   //如果当前聊天好友与接收的消息发送用户相同，则添加一天聊天记录
+    if(lb_friendName->text() == peerName)   //正处于与该用户的聊天页面，则添加一天聊天记录
     {
-        addToListWidget(chatInfo.peerName,chatInfo.flag,chatInfo.direction,
-                        chatInfo.word,chatInfo.url,chatInfo.time);
+        addToListWidget(lb_friendName->text(),flag,"recv",
+                        msg,"",chatInfo.time);
     }
 }
 
-void ChatPage::addToListWidget(const QString &peerName,const int &flag,const QString &dirction,
-                               const QString &word,const QString &url,const QString &time)
+void ChatPage::onRecordFinish(QString audioPath)
 {
+    //保存音频文件路径到sendFilePath,用于发送文件到服务器
+    sendFilePath = audioPath;
+    qDebug() << "audio send";
+    //发送音频文件到服务器
+    ctrl->createSockAndSend(audioPath);
+    //发送转发音频的消息到服务器并添加到listWdiget并存入数据库
+    onSend();
+//    addToListWidget(lb_friendName->text(),7,"send",audioPath,"",
+//                    QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss"));
+}
+
+void ChatPage::addToListWidget(const QString &name,const int &flag,const QString &dirction,
+                               const QString &wordOfUrl,const QString &imagePath,const QString &time)
+{
+    bool isSend = (dirction == "send")?true:false;
+    //需要通过name获取用户的的头像
+    QString mImagePath = imagePath;
+    if(mImagePath.isEmpty())
+        mImagePath = GlobalDate::getImageUrl(name);
     QListWidgetItem *item = new QListWidgetItem(listWidget);
     item->setFlags(Qt::ItemIsEnabled);
     item->setSizeHint(QSize(0,50));
-    TextChatInfoItem * itemWidget;
-    QString msg = word;
-    msg.replace("&quot;","\"");//将单引号和双引号替换
-    msg.replace("&apos;","'");
-//    qDebug() << "addToListWidget word = [" << word << "]";
-    if(dirction == "send"){
-        itemWidget = new TextChatInfoItem(listWidget,url,msg);
+    TextChatInfoItem * itemWidget = nullptr;
+    QString msg = wordOfUrl;
+    if(flag == 3)
+    {
+        msg.replace("&quot;","\"");//将单引号和双引号替换
+        msg.replace("&apos;","'");
+    }
+    else if (flag == 7) {   //音频文件
+        msg = QString("<img src=\":icon/app_icon/voiceInput.png\" />");
     }
     else {
-        itemWidget = new TextChatInfoItem(listWidget,url,msg,false);
+        return;
+    }
+
+    itemWidget = new TextChatInfoItem(listWidget,mImagePath,msg,isSend);
+    if(flag == 7)
+    {
+        itemWidget->setAudioPath(wordOfUrl);
     }
     listWidget->setItemWidget(item,itemWidget);
     listWidget->setCurrentRow(listWidget->count()-1);
@@ -131,9 +183,16 @@ void ChatPage::initInfo(QList<ChatInfo> *list)
     this->lb_friendName->setText(list->begin()->peerName);
     listWidget->clear();
     //加载与friendName的聊天记录
+    QString wordOrUrl = "";
     for(QList<ChatInfo>::iterator iter = list->begin();iter != list->end(); iter++)
     {
-        addToListWidget(iter->peerName,iter->flag,iter->direction,iter->word,iter->url,iter->time);
+        if(iter->flag == 7)
+            wordOrUrl = iter->url;
+        else {
+            wordOrUrl = iter->word;
+        }
+
+        addToListWidget(iter->peerName,iter->flag,iter->direction,wordOrUrl,"",iter->time);
     }
 }
 
@@ -147,12 +206,14 @@ void ChatPage::on_btn_voiceSend_clicked()//改为录音输入，发送语音格�
     qDebug() << "changed send voice mode";
     if(btn_soundRecord->isHidden()){
         btn_soundRecord->show();
+        msgType = 7;    //录音按钮显示，表示即将发送的消息为语音消息
         te_sendBox->hide();
         btn_send->hide();
         btn_otherSend->show();
     }
     else {
-        btn_soundRecord->hide();
+        btn_soundRecord->hide();  //录音按钮隐藏表示是即将发送的消息为文字消息
+        msgType = 3;
         te_sendBox->show();
         if(!te_sendBox->toPlainText().isEmpty()){
             btn_otherSend->hide();

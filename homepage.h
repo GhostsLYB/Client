@@ -12,6 +12,7 @@
 #include "customWidget/widgetmine.h"
 #include "customUI/homepagetop.h"
 #include "socket/control.h"
+#include "globaldate.h"
 
 namespace Ui {
 class HomePage;

@@ -208,7 +208,7 @@ p, li { white-space: pre-wrap; }
          </widget>
         </item>
         <item>
-         <widget class="QToolButton" name="btn_soundRecord">
+         <widget class="SoundRecordButton" name="btn_soundRecord">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
             <horstretch>0</horstretch>
@@ -302,6 +302,13 @@ font: 75 9pt &quot;微软雅黑&quot;;</string>
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>SoundRecordButton</class>
+   <extends>QToolButton</extends>
+   <header location="global">customUI/soundrecordbutton.h</header>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="res.qrc"/>
  </resources>

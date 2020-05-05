@@ -47,6 +47,15 @@ TextChatInfoItem::TextChatInfoItem(QWidget *parent,QString imagePath,
     this->setLayout(layout);
     layout->setMargin(0);
     layout->setSpacing(0);
+
+
+}
+
+void TextChatInfoItem::mouseReleaseEvent(QMouseEvent *)
+{
+    qDebug() << "TextChatInfoItem audioPath = " << audioPath;
+    if(!audioPath.isEmpty())
+        QSound::play(audioPath);
 }
 
 TextChatInfoItem::~TextChatInfoItem()

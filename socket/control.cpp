@@ -128,17 +128,15 @@ void Control::processResponse(int flag, QString &msg)    //msg格式 ：信息�
         return;
     }
     case 3: {               //来自好友的消息 格式：好友名长度+好友名+消息长度+消息
-        qDebug()<<msg;
-        emit sigRecvMessage(msg);
+        qDebug() << msg;
+        emit sigRecvMessage(msg, 3);
         return;
     }
-//    case 20:{
-//        /*发送文件的格式 总长度+类型+文件名长+文件名+分段编号+最大编号+数据段长度+数据段
-//         *           [  4 ]+[ 4]+[  4   ]+[ *  ]+[  8位 ]+[  8位 ]+[   4位  ]+[ *  ]*/
-//        qDebug()<<msg;
-//        saveFileSection(msg);
-//        return;
-//    }
+    case 7:{
+        qDebug() << "recv audio msg = " << msg;
+        emit sigRecvMessage(msg, 7);
+        return;
+    }
 
     default: return;
     }

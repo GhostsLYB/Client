@@ -116,6 +116,7 @@ void AllPageListWidget::onLoginSuccessed(QString userName)
     homepage->cleanRecentChatItems();                   //清空原有项
     homepage->addRecentChatItems(recentChatInfo);       //添加所有新项
     qDebug() << "login user:"<<userName;//登陆成功
+    GlobalDate::setCurrentUserName(userName);
 }
 
 //获取数据库中表格的数据
