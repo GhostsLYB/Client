@@ -8,6 +8,8 @@
 #include <QListWidget>
 #include <QTextEdit>
 #include <QDateTime>
+#include <QFileDialog>
+
 #include "socket/control.h"
 #include "database/sqlitecontrol.h"
 #include "customUI/textchatinfoitem.h"
@@ -33,13 +35,18 @@ public:
 signals:
     void sigSend(ChatInfo);
     void sigRecv(ChatInfo);
+    void sigRequestDownloadFile(QString fileName);
 
 public slots:
     void onRecvMessage(QString msg, int flag);
     void onRecordFinish(QString);
+    void onDownloadFile(QString filePath)
+    {
+        emit sigRequestDownloadFile(filePath);
+    }
 
 private:
-    void onSend();
+    void onSend(int msgFlag = -1);
     void addToListWidget(const QString&,const int&,const QString&,const QString&,const QString&,const QString&);
 
 public:
@@ -62,6 +69,16 @@ private slots:
     void on_btn_soundRecord_clicked();
 
     void on_btn_otherSend_clicked();
+
+    void on_btn_p1_clicked();
+
+    void on_btn_p2_clicked();
+
+    void on_btn_p3_clicked();
+
+    void on_btn_sendPicture_clicked();
+
+    void on_btn_sendFile_clicked();
 
 private:
     Ui::ChatPage *ui;

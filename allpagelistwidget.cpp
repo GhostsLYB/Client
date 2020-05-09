@@ -42,6 +42,7 @@ AllPageListWidget::AllPageListWidget(QWidget *parent) :
         ui->tabWidget->setCurrentIndex(2);
         homepage->setIndex(0);
     });
+    connect(chatPage,&ChatPage::sigRequestDownloadFile,homepage,&HomePage::onDownloadFile);
     connect(chatPage,&ChatPage::sigSend,this,&AllPageListWidget::onChatMsgInsert);
     connect(chatPage,&ChatPage::sigRecv,this,&AllPageListWidget::onChatMsgInsert);
     //userInfo page index = 4

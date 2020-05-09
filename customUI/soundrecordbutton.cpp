@@ -2,7 +2,9 @@
 #include "ui_soundrecordbutton.h"
 
 #define PI_osd die
-QString wavAudioFilePath = QString("e:/always/audio/");
+//QString wavAudioFilePath = QString("e:/always/audio/");
+
+QString wavAudioFilePath = QString("e:/always/IM/file/");
 
 SoundRecordButton::SoundRecordButton(QWidget *parent) :
     QToolButton(parent),

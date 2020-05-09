@@ -43,6 +43,7 @@ public slots:
     void onChatItemClicked(QString);
     void onFriendItemClicked(QString);
     void onSetMineInfo();
+    void onDownloadFile(QString filePath);
 
 private slots:
     void on_btn_exit_clicked();

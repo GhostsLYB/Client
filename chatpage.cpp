@@ -26,6 +26,7 @@ ChatPage::ChatPage(Control * parentCtrl, QWidget *parent) :
     btn_soundRecord = qobject_cast<SoundRecordButton*>(ui->btn_soundRecord);
     connect(btn_soundRecord,&SoundRecordButton::sigRecordFinish,this,&ChatPage::onRecordFinish);
     btn_soundRecord->hide();        //录音按钮隐藏（此时msgType默认为0表示文字消息）
+    ui->frame->hide();
 
     //控制发送按钮的使能状态
     connect(te_sendBox,&QTextEdit::textChanged,[&](){
@@ -40,14 +41,17 @@ ChatPage::ChatPage(Control * parentCtrl, QWidget *parent) :
        }
     });
     //连接发送按钮的点击信号和槽函数
-    connect(btn_send,&QPushButton::clicked,this,&ChatPage::onSend);
+    connect(btn_send,&QPushButton::clicked,[&](){onSend(3);});
 
 }
 
-void ChatPage::onSend()
+void ChatPage::onSend(int msgFlag)
 {
     //发送文字消息的数据格式：[总长][消息类型3][信息类型][接收用户名长][接收用户名][消息长度][消息]
-    //消息类型为3表示转发 信息类型：3文字 7语音 8图片 9视频 10文件
+    //消息类型为3表示转发 信息类型：3文字 7语音 8图片 9文件
+    int tempFlag = msgType; //保存原消息类型
+    if(msgFlag != -1)       //非默认参数时将消息类型改变
+        msgType = msgFlag;
     QString strTextEdit = "";
     QString sendMsg = "";
     char temp[2048] = {0};
@@ -81,6 +85,20 @@ void ChatPage::onSend()
         strTextEdit.append(temp);               //追加文件名长度
         strTextEdit.append(sendFilePath);       //追加文件名
     }
+    else if (msgType == 8){     //图片消息
+        msg = sendFilePath;
+        showInfo = "";
+        sprintf(temp,"%4d",qstrlen(sendFilePath.toUtf8().data()));
+        strTextEdit.append(temp);               //追加文件名长度
+        strTextEdit.append(sendFilePath);       //追加文件名
+    }
+    else if (msgType == 9) {    //文件消息
+        msg = sendFilePath;
+        showInfo = "";
+        sprintf(temp,"%4d",qstrlen(sendFilePath.toUtf8().data()));
+        strTextEdit.append(temp);               //追加文件名长度
+        strTextEdit.append(sendFilePath);       //追加文件名
+    }
 
     sprintf(temp,"%4d",qstrlen(strTextEdit.toUtf8().data()));
     sendMsg.append(temp);           //设置四字节首部的消息长度
@@ -90,10 +108,15 @@ void ChatPage::onSend()
     {
         addToListWidget(lb_friendName->text(),msgType,"send",msg,"",
                     QDateTime::currentDateTime().toString("hh:mm"));
+        if(msgType == 7 || msgType == 8 || msgType == 9)
+            msg = "";
         ChatInfo chatInfo = {lb_friendName->text(),msgType,"send",msg,sendFilePath,
                              QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss")};
         emit sigSend(chatInfo);
     }
+    msgType = tempFlag; //还原消息类型
+    if(msgType == 3)
+        sendFilePath = "";
     te_sendBox->clear();
 }
 
@@ -135,7 +158,7 @@ void ChatPage::onRecordFinish(QString audioPath)
     //保存音频文件路径到sendFilePath,用于发送文件到服务器
     sendFilePath = audioPath;
     qDebug() << "audio send";
-    //发送音频文件到服务器
+    //发送音频文件到服务器n
     ctrl->createSockAndSend(audioPath);
     //发送转发音频的消息到服务器并添加到listWdiget并存入数据库
     onSend();
@@ -147,10 +170,13 @@ void ChatPage::addToListWidget(const QString &name,const int &flag,const QString
                                const QString &wordOfUrl,const QString &imagePath,const QString &time)
 {
     bool isSend = (dirction == "send")?true:false;
+    QString userName = name;
+    if(isSend)
+        userName = GlobalDate::getImageUrl(GlobalDate::currentUserName());
     //需要通过name获取用户的的头像
     QString mImagePath = imagePath;
     if(mImagePath.isEmpty())
-        mImagePath = GlobalDate::getImageUrl(name);
+        mImagePath = GlobalDate::getImageUrl(userName);
     QListWidgetItem *item = new QListWidgetItem(listWidget);
     item->setFlags(Qt::ItemIsEnabled);
     item->setSizeHint(QSize(0,50));
@@ -164,15 +190,23 @@ void ChatPage::addToListWidget(const QString &name,const int &flag,const QString
     else if (flag == 7) {   //音频文件
         msg = QString("<img src=\":icon/app_icon/voiceInput.png\" />");
     }
+    else if (flag == 8) {
+        msg = QString("<img src=\"%1\" height=\"150\" width=\"100\"/>").arg(wordOfUrl);
+        item->setSizeHint(QSize(0,150));
+    }
+    else if (flag == 9){
+        msg = wordOfUrl.mid(wordOfUrl.lastIndexOf('/')+1);
+    }
     else {
         return;
     }
 
-    itemWidget = new TextChatInfoItem(listWidget,mImagePath,msg,isSend);
-    if(flag == 7)
+    itemWidget = new TextChatInfoItem(listWidget,mImagePath,msg,isSend,flag);
+    if(flag == 7 || flag == 8 || flag == 9)
     {
-        itemWidget->setAudioPath(wordOfUrl);
+        itemWidget->setFilePath(wordOfUrl);
     }
+    connect(itemWidget,&TextChatInfoItem::sigRequestDownloadFile,this,&ChatPage::onDownloadFile);
     listWidget->setItemWidget(item,itemWidget);
     listWidget->setCurrentRow(listWidget->count()-1);
 }
@@ -186,7 +220,7 @@ void ChatPage::initInfo(QList<ChatInfo> *list)
     QString wordOrUrl = "";
     for(QList<ChatInfo>::iterator iter = list->begin();iter != list->end(); iter++)
     {
-        if(iter->flag == 7)
+        if(iter->flag == 7 || iter->flag == 8 || iter->flag == 9)
             wordOrUrl = iter->url;
         else {
             wordOrUrl = iter->word;
@@ -231,7 +265,19 @@ void ChatPage::on_btn_voiceSend_clicked()//改为录音输入，发送语音格�
 void ChatPage::on_btn_expression_clicked()
 {
     qDebug() << "open expression chose page";
-    te_sendBox->append("<img src=\":/icon/app_icon/ghost.png\" />");
+//    te_sendBox->append("<img src=\":/icon/app_icon/ghost.png\" />");
+    if(ui->frame->isHidden())
+    {
+        ui->frame->show();
+        ui->btn_p1->show();
+        ui->btn_p2->show();
+        ui->btn_p3->show();
+        ui->btn_sendFile->hide();
+        ui->btn_sendPicture->hide();
+    }
+    else {
+        ui->frame->hide();
+    }
 }
 
 
@@ -243,4 +289,54 @@ void ChatPage::on_btn_soundRecord_clicked()
 void ChatPage::on_btn_otherSend_clicked()
 {
     qDebug() << "open send other file page";
+    if(ui->frame->isHidden())
+    {
+        ui->frame->show();
+        ui->btn_p1->hide();
+        ui->btn_p2->hide();
+        ui->btn_p3->hide();
+        ui->btn_sendFile->show();
+        ui->btn_sendPicture->show();
+    }
+    else {
+        ui->frame->hide();
+    }
 }
+
+void ChatPage::on_btn_p1_clicked()
+{
+    te_sendBox->append("<img src=\":/icon/app_icon/ghost.png\" />");
+}
+
+void ChatPage::on_btn_p2_clicked()
+{
+    te_sendBox->append("<img src=\":/icon/app_icon/add.png\" />");
+}
+
+void ChatPage::on_btn_p3_clicked()
+{
+    te_sendBox->append("<img src=\":/icon/app_icon/voiceInput.png\" />");
+}
+
+void ChatPage::on_btn_sendPicture_clicked()
+{
+    qDebug() << "btn send picture is clicked";
+    sendFilePath = QFileDialog::getOpenFileName(this,"选择图片","","*.jpg;;*.png");
+    if(sendFilePath.isEmpty())
+        return;
+//    发送图片
+    ctrl->createSockAndSend(sendFilePath);
+    onSend(8);
+}
+
+void ChatPage::on_btn_sendFile_clicked()
+{
+    qDebug() << "btn send file is clicked";
+    sendFilePath = QFileDialog::getOpenFileName(this,"选择文件","","*");
+    if(sendFilePath.isEmpty())
+        return;
+//    发送文件
+    ctrl->createSockAndSend(sendFilePath);
+    onSend(9);
+}
+

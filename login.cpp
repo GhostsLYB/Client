@@ -30,7 +30,6 @@ void Login::btn_loginClicked()
         msg = "";
         return;
     }
-
     if(SocketControl::isconnected())
         SocketControl::socket()->write(msg.toUtf8());
     else

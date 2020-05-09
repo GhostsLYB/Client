@@ -3,9 +3,10 @@
 
 //默认为发送消息，isSend为false时为接收消息
 TextChatInfoItem::TextChatInfoItem(QWidget *parent,QString imagePath,
-                                   QString info,bool isSend) :
+                                   QString info,bool isSend, int flag) :
     QWidget(parent),
-    ui(new Ui::TextChatInfoItem)
+    ui(new Ui::TextChatInfoItem),
+    flag(flag)
 {
     ui->setupUi(this);
     QHBoxLayout * layout = new QHBoxLayout(this);
@@ -33,7 +34,12 @@ TextChatInfoItem::TextChatInfoItem(QWidget *parent,QString imagePath,
     lb_image->setPixmap(pix);   //设置头像
     te_info->append(info);      //设置信息
     te_info->setFixedSize(QSize(100,24));
-
+    if(flag == 8){ //图片
+        te_info->setFixedSize(QSize(100,150));
+    }
+    if(flag == 9){ //文件
+        te_info->setFixedSize(QSize(100,38));
+    }
     if(isSend){ //发送信息       //设置布局
         layout->addSpacerItem(spacerItem);
         layout->addLayout(infoLayout);
@@ -53,9 +59,17 @@ TextChatInfoItem::TextChatInfoItem(QWidget *parent,QString imagePath,
 
 void TextChatInfoItem::mouseReleaseEvent(QMouseEvent *)
 {
-    qDebug() << "TextChatInfoItem audioPath = " << audioPath;
-    if(!audioPath.isEmpty())
-        QSound::play(audioPath);
+    qDebug() << "TextChatInfoItem audioPath = " << filePath;
+    if(!filePath.isEmpty()){
+        QFileInfo fileInfo(filePath);
+        if(fileInfo.isFile())
+            QSound::play(filePath);
+        else {
+            QString fileName = filePath.mid(filePath.lastIndexOf('/')+1);
+            qDebug() << "请求文件下载" <<fileName;
+            emit sigRequestDownloadFile(filePath);
+        }
+    }
 }
 
 TextChatInfoItem::~TextChatInfoItem()

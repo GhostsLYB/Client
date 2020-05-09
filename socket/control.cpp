@@ -74,6 +74,7 @@ void Control::sendFileRequest(QTcpSocket ** sock, QString fileName){
     /*msg格式 总长+类型+文件名长+文件名       文件信息格式：文件名长+文件名+文件长度
              [4]+[ 4]+[4]+[ *  ]                  [   4  ]+[  * ]+[  8  ]*/
     char sendbuf[100] = {0};
+    qDebug() << fileName << "sendFileRequest";
     QString filePath = "E:\\always\\IM\\file\\" +fileName;
     file = new QFile(filePath);
     file->remove(); //删除原有同名文件文件
@@ -135,6 +136,16 @@ void Control::processResponse(int flag, QString &msg)    //msg格式 ：信息�
     case 7:{
         qDebug() << "recv audio msg = " << msg;
         emit sigRecvMessage(msg, 7);
+        return;
+    }
+    case 8:{
+        qDebug() << "recv picture msg = " << msg;
+        emit sigRecvMessage(msg, 8);
+        return;
+    }
+    case 9:{
+        qDebug() << "recv file msg = " << msg;
+        emit sigRecvMessage(msg, 9);
         return;
     }
 

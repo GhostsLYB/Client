@@ -15,8 +15,6 @@ HomePage::HomePage(Control * parentTrol, QWidget *parent) :
         ctrl = new Control(this);
     else
         ctrl = parentTrol;
-    //有消息接收的连接
-    //connect(ctrl,&Control::sigRecvMessage,chatPage,&ChatPage::onRecvMessage);
 
     //最近聊天好友列表
     wid_main = new WidgetMain(ui->tab_main);
@@ -145,6 +143,7 @@ void HomePage::on_btn_sendFile_clicked()
 
 void HomePage::on_btn_recvFile_clicked()
 {
+//    onDownloadFile(ui->le_fileName->text());
     if(recvSendFileSocket != nullptr){
         delete recvSendFileSocket;
         recvSendFileSocket = nullptr;
@@ -152,6 +151,24 @@ void HomePage::on_btn_recvFile_clicked()
     recvSendFileSocket = new QTcpSocket();
     connect(recvSendFileSocket, &QTcpSocket::connected,[&](){
         ctrl->sendFileRequest(&recvSendFileSocket, ui->le_fileName->text());
+    });
+    connect(recvSendFileSocket, &QTcpSocket::readyRead, [&](){
+        ctrl->recvFile(&recvSendFileSocket);
+    });
+    recvSendFileSocket->connectToHost("39.105.105.251", 5188);
+}
+
+void HomePage::onDownloadFile(QString filePath)
+{
+    qDebug() << filePath;
+    static QString fileName = QString(filePath).mid(filePath.lastIndexOf('/')+1);
+    if(recvSendFileSocket != nullptr){
+        delete recvSendFileSocket;
+        recvSendFileSocket = nullptr;
+    }
+    recvSendFileSocket = new QTcpSocket();
+    connect(recvSendFileSocket, &QTcpSocket::connected,[&](){
+        ctrl->sendFileRequest(&recvSendFileSocket, fileName);
     });
     connect(recvSendFileSocket, &QTcpSocket::readyRead, [&](){
         ctrl->recvFile(&recvSendFileSocket);
