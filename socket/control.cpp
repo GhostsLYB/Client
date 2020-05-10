@@ -148,7 +148,10 @@ void Control::processResponse(int flag, QString &msg)    //msg格式 ：信息�
         emit sigRecvMessage(msg, 9);
         return;
     }
-
+    case 10:{
+        qDebug() << "recv delete friend = " << msg;
+        emit sigRecvDeleteFriend(msg);
+    }
     default: return;
     }
 }

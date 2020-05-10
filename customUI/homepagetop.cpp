@@ -20,19 +20,11 @@ HomePageTop::HomePageTop(QWidget *parent) :
     btn_search->setSizePolicy(QSizePolicy::Preferred,QSizePolicy::Preferred);
     btn_search->setAutoRaise(true);
     btn_search->setText("搜索");
-    //btn_serach->setIconSize(QSize(30,30));
-    //btn_serach->setIcon(QIcon("/icon/2/png"));
-    btn_addOption = new QToolButton(this);
-    btn_addOption->setObjectName("btn_addOption");
-    btn_addOption->setSizePolicy(QSizePolicy::Preferred,QSizePolicy::Preferred);
-    btn_addOption->setAutoRaise(true);
-    btn_addOption->setText("添加");
     //btn_addOption->setIconSize(QSize(30,30));
     //btn_addOption->setIcon(QIcon("/icon/2/png"));
     ui->hLayout->addWidget(btn_word,2);
     ui->hLayout->addStretch(4);
     ui->hLayout->addWidget(btn_search,1);
-    ui->hLayout->addWidget(btn_addOption,1);
 }
 
 void HomePageTop::setWord(QString word)

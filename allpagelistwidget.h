@@ -36,6 +36,7 @@ public slots:
     void onChatMsgInsert(ChatInfo);
     void onSetMineInfo(QString, QString, QList<QString>&);
     void onShowAllInfo(QString, int targetPage);
+    void onRecvDeleteFriend(QString msg);
 private:
     Ui::AllPageListWidget   *ui;
     Control                 *ctrl         = nullptr;

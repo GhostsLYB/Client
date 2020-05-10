@@ -8,6 +8,7 @@
 #include <QToolButton>
 #include "socket/control.h"
 #include "database/sqlitecontrol.h"
+#include "globaldate.h"
 
 namespace Ui {
 class UserInfoPage;
@@ -18,7 +19,7 @@ class UserInfoPage : public QWidget
     Q_OBJECT
 
 public:
-    explicit UserInfoPage(Control * ctrl, QWidget *parent = nullptr);
+    explicit UserInfoPage(Control *ctrl, SqliteControl *sqlite, QWidget *parent = nullptr);
     void setBackPage(int page){backPage = page;}
     int getBackPage(){return backPage;}
     void setUserName(QString);
@@ -29,6 +30,7 @@ public:
 signals:
     void sigFriendList();
     void sigChatWith(QString);
+    void sigDeleteFriend();
 
 private slots:
     void on_btn_cancle_clicked();
@@ -40,6 +42,7 @@ private slots:
 private:
     Ui::UserInfoPage    *ui;
     Control             *ctrl;
+    SqliteControl       *sqlite;
     QToolButton         *btn_cancle;
     QLabel              *lb_image;
     QLabel              *lb_remark;

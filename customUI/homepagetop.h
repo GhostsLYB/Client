@@ -21,7 +21,6 @@ private:
     Ui::HomePageTop *ui;
     QToolButton * btn_word = nullptr;
     QToolButton * btn_search = nullptr;
-    QToolButton * btn_addOption = nullptr;
 };
 
 #endif // HOMEPAGETOP_H

@@ -1,10 +1,11 @@
 #include "userinfopage.h"
 #include "ui_userinfopage.h"
 
-UserInfoPage::UserInfoPage(Control *ctrl, QWidget *parent) :
+UserInfoPage::UserInfoPage(Control *ctrl, SqliteControl *sqlite, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::UserInfoPage),
-    ctrl(ctrl)
+    ctrl(ctrl),
+    sqlite(sqlite)
 {
     ui->setupUi(this);
     btn_cancle          = ui->btn_cancle;
@@ -44,11 +45,23 @@ void UserInfoPage::on_btn_cancle_clicked()
 void UserInfoPage::setUserName(QString userName){
     lb_userName->setText(perUserName+userName);
     lb_remark->setText(userName);
+    if(userName == GlobalDate::currentUserName())
+    {
+        btn_deleteFriend->hide();
+    }       //是好友
+    else if(sqlite->isFriend(GlobalDate::currentUserName(),userName)) {
+        btn_deleteFriend->show();
+        btn_deleteFriend->setText("删除好友");
+    }
+    else {
+        btn_deleteFriend->show();
+        btn_deleteFriend->setText("添加好友");
+    }
 }
 
 QString UserInfoPage::getUserName()
 {
-    return lb_userName->text();
+    return lb_remark->text();
 }
 
 void UserInfoPage::setUserInfo(QList<QString> &data)
@@ -76,5 +89,28 @@ void UserInfoPage::on_btn_sendMsg_clicked()
 //删除好友槽函数
 void UserInfoPage::on_btn_deleteFriend_clicked()
 {
-    qDebug() << "delete friend button is clicked";
+    if(btn_deleteFriend->text() == "删除好友"){
+        qDebug() << "delete friend button is clicked";
+        QString userName = GlobalDate::currentUserName();
+        QString userName2 = lb_remark->text();
+        sqlite->deleteFriend(userName,userName2);
+        //发送删除好友请求到服务器 总长+类型10+名1长+名1+名2长+名2
+        char ch[1024] = {0};
+        sprintf(ch,"%4d%4d%4d%s%4d%s"
+                ,12+qstrlen(userName.toUtf8().data())+qstrlen(userName2.toUtf8().data())
+                ,10
+                ,qstrlen(userName.toUtf8().data())
+                ,userName.toUtf8().data()
+                ,qstrlen(userName2.toUtf8().data())
+                ,userName2.toUtf8().data());
+        QString msg = QString(ch);
+        qDebug() << msg;
+        ctrl->sock->send(msg);
+        emit sigDeleteFriend();
+    }
+    else{
+        qDebug() << "add friend button is clicked";
+
+    }
+
 }

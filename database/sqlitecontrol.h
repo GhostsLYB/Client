@@ -15,6 +15,8 @@
 #include <QDebug>
 #include <QSqlRecord>
 
+#include "globaldate.h"
+
 //每个用户登陆时创建数据库（数据库不存在的情况下）
 struct ChatInfo{
 public:
@@ -31,7 +33,7 @@ public:
     QString friendName;
 };
 
-class SqliteControl : QObject
+class SqliteControl : public QObject
 {
 public:
     SqliteControl(QObject * parent = nullptr);
@@ -46,6 +48,9 @@ public:
     bool getRecentChatInfo(QString userName, QVector<QList<QString>> &data);
     void closeDatabase(){m_DataBase.close();}
     bool isExistTable(QString table);
+    bool isFriend(QString userName1 ,QString userName2);
+    void deleteFriend(QString userName1 ,QString userName2);
+    void getFriendList(QMap<QString,QString> &map);
     QString getDatabaseName();
     bool update(QString tableName,QString conditionFieldName,QString condeitonValue,
                 QString modifyFieldName,QString modifyValue);

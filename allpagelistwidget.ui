@@ -35,7 +35,7 @@
       <enum>QTabWidget::South</enum>
      </property>
      <property name="currentIndex">
-      <number>5</number>
+      <number>6</number>
      </property>
      <property name="documentMode">
       <bool>true</bool>
@@ -110,6 +110,12 @@
         <number>0</number>
        </property>
       </layout>
+     </widget>
+     <widget class="QWidget" name="tab_search">
+      <attribute name="title">
+       <string>search</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_7"/>
      </widget>
     </widget>
    </item>

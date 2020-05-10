@@ -44,6 +44,7 @@ public slots:
     void onFriendItemClicked(QString);
     void onSetMineInfo();
     void onDownloadFile(QString filePath);
+    void onInitFriendList(QMap<QString,QString> &map);
 
 private slots:
     void on_btn_exit_clicked();

@@ -50,7 +50,7 @@ bool SqliteControl::isExistTable(QString table)
         return bRet;
     }
     QSqlQuery query(m_DataBase);
-    /*bool ret =  */query.exec(QString("select count(*) from sqlite_master where type='table' and name='%1'").arg(table));
+    query.exec(QString("select count(*) from sqlite_master where type='table' and name='%1'").arg(table));
 
     if (query.next())
     {
@@ -59,12 +59,87 @@ bool SqliteControl::isExistTable(QString table)
             bRet = true;
         }
     }
-//    if (ret)
-//        qDebug()<<"select sqlite_master successed "<<bRet;
-//    else {
-//        qDebug()<<"select sqlite_master fail"<<bRet;
-//    }
     return bRet;
+}
+
+bool SqliteControl::isFriend(QString userName1, QString userName2)
+{
+    bool bRet = false;
+    if (!m_DataBase.open()) {
+        return bRet;
+    }
+    QSqlQuery query(m_DataBase);
+    query.exec(QString("select count(*) from user_friendList where "
+                       "(requestUser = '%1' and responseUser = '%2') or "
+                       "(requestUser = '%3' and responseUser = '%4')")
+               .arg(userName1).arg(userName2).arg(userName2).arg(userName1));
+
+    if (query.next())
+    {
+        if (query.value(0).toInt() > 0)
+        {
+            bRet = true;
+        }
+    }
+    return bRet;
+}
+
+void SqliteControl::deleteFriend(QString userName1, QString userName2)
+{
+    if (!m_DataBase.open())
+        return;
+/*
+delete from recent_chatList where friendName = 'test';
+delete from root_chatInfo where peerName = 'test';
+delete from user_friendList where requestUser = 'test' or responseUser = 'test';
+delete from user_info where username = 'test';
+delete from users where username = 'test';
+*/
+    QSqlQuery query(m_DataBase);
+    QString sql = QString("delete from recent_chatList where friendName = '%1'").arg(userName2);
+    qDebug() << sql;
+    query.exec(sql);//最近聊天记录
+    sql = QString("delete from %1_chatInfo where peerName = '%2'")
+            .arg(userName1).arg(userName2);
+    qDebug() << sql;
+    query.exec(sql);//删除好友聊天记录
+    sql = QString("delete from user_friendList where requestUser = '%1' or responseUser = '%2'")
+            .arg(userName2).arg(userName2);
+    qDebug() << sql;
+    query.exec(sql);//删除本地好友列表数据
+    sql = QString("delete from user_info where username = '%1'").arg(userName2);
+    qDebug() << sql;
+    query.exec(sql);//删除本地账户信息
+    sql = QString("delete from users where username = '%1'").arg(userName2);
+    qDebug() << sql;
+    query.exec(sql);//删除本地用户信息
+}
+
+void SqliteControl::getFriendList(QMap<QString, QString> &map)
+{
+
+    if(!m_DataBase.open())
+        return ;
+    QString currName = GlobalDate::currentUserName();
+    QString sql = QString("select username,imageUrl "
+                          "from user_friendList,user_info "
+                          "where (user_friendList.responseUser = user_info.username "
+                          "and user_friendList.requestUser = '%1') or"
+                          "(user_friendList.requestUser = user_info.username "
+                          "and user_friendList.responseUser = '%2' )")
+            .arg(currName).arg(currName);
+    qDebug() << "sql = [" << sql << "]";
+    QSqlQuery query(m_DataBase);
+    bool success = query.exec(sql);
+    if(success)
+    {
+        map.clear();
+        QSqlRecord rec = query.record();
+        while (query.next())
+        {
+            map.insert(query.value(0).toString(),query.value(1).toString());
+        }
+    }
 }
 
 bool SqliteControl::createTable(QString tableName)

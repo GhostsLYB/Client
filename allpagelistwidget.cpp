@@ -1,4 +1,4 @@
-#include "allpagelistwidget.h"
+﻿#include "allpagelistwidget.h"
 #include "ui_allpagelistwidget.h"
 #include <QFile>
 
@@ -15,6 +15,7 @@ AllPageListWidget::AllPageListWidget(QWidget *parent) :
     connect(ctrl->sock->socket(),&QTcpSocket::connected,ctrl->sock,&SocketControl::onConnected);
     connect(ctrl->sock->socket(),&QTcpSocket::disconnected,ctrl->sock,&SocketControl::onDisconnected);
     connect(ctrl->sock->socket(),&QTcpSocket::readyRead,ctrl,&Control::onRead);
+    connect(ctrl,&Control::sigRecvDeleteFriend,this,&AllPageListWidget::onRecvDeleteFriend);
     //login page index = 0
     login = new Login(ctrl);
     ui->tab_login->layout()->addWidget(login);
@@ -33,6 +34,7 @@ AllPageListWidget::AllPageListWidget(QWidget *parent) :
     connect(homepage,&HomePage::sigSetMineInfo,this,&AllPageListWidget::onSetMineInfo);
     connect(this,&AllPageListWidget::sigGetTableDataFinish,homepage,&HomePage::onSetMineInfo);
     connect(homepage,&HomePage::sigShowAllInfo,this,&AllPageListWidget::onShowAllInfo);
+
     //chat page index = 3
     chatPage = new ChatPage(ctrl);
     ui->tab_chat->layout()->addWidget(chatPage);
@@ -46,12 +48,22 @@ AllPageListWidget::AllPageListWidget(QWidget *parent) :
     connect(chatPage,&ChatPage::sigSend,this,&AllPageListWidget::onChatMsgInsert);
     connect(chatPage,&ChatPage::sigRecv,this,&AllPageListWidget::onChatMsgInsert);
     //userInfo page index = 4
-    userInfoPage = new UserInfoPage(ctrl);
+    userInfoPage = new UserInfoPage(ctrl ,sqlite);
     ui->tab_userInfo->layout()->addWidget(userInfoPage);
     connect(userInfoPage, &UserInfoPage::sigChatWith,this,&AllPageListWidget::onChatWith);
     connect(userInfoPage, &UserInfoPage::sigFriendList,[&](){
         ui->tabWidget->setCurrentIndex(2);
         homepage->setIndex(1);
+    });
+    connect(userInfoPage,&UserInfoPage::sigDeleteFriend,[&](){
+        //刷新好友列表页面
+        sqlite->getFriendList(GlobalDate::getFriendNameImageMap());
+        homepage->onInitFriendList(GlobalDate::getFriendNameImageMap());
+        //刷新最接近聊天界面
+        QVector<QList<QString>> recentChatInfo;
+        sqlite->getRecentChatInfo(GlobalDate::currentUserName(),recentChatInfo); //读取所有最近聊天信息
+        homepage->cleanRecentChatItems();                   //清空原有项
+        homepage->addRecentChatItems(recentChatInfo);       //添加所有新项
     });
     //detailedInfo page index = 5
     detailedInfoPage = new DetailedInfoPage(ctrl, sqlite, ui->tab_allInfo);
@@ -118,6 +130,8 @@ void AllPageListWidget::onLoginSuccessed(QString userName)
     homepage->addRecentChatItems(recentChatInfo);       //添加所有新项
     qDebug() << "login user:"<<userName;//登陆成功
     GlobalDate::setCurrentUserName(userName);
+    sqlite->getFriendList(GlobalDate::getFriendNameImageMap());//初始化好友列表
+    homepage->onInitFriendList(GlobalDate::getFriendNameImageMap());
 }
 
 //获取数据库中表格的数据
@@ -132,6 +146,30 @@ void AllPageListWidget::onShowAllInfo(QString userName, int targetPage)
 {
     ui->tabWidget->setCurrentIndex(5);//显示已登录用户的详细信息
     detailedInfoPage->setCurrentPage(targetPage,userName);
+}
+
+//处理接受到的好友删除消息
+void AllPageListWidget::onRecvDeleteFriend(QString msg)
+{
+    QString userName;
+    QString userName2;
+    int len = msg.left(4).toInt();
+    msg.remove(0,4);
+    userName = msg.left(len);
+    msg.remove(0,len);
+    len = msg.left(4).toInt();
+    msg.remove(0,4);
+    userName2 = msg.left(len);
+    qDebug() << userName << " " << userName2;
+    sqlite->deleteFriend(userName, userName2);
+    //刷新好友列表页面
+    sqlite->getFriendList(GlobalDate::getFriendNameImageMap());
+    homepage->onInitFriendList(GlobalDate::getFriendNameImageMap());
+    //刷新最近聊天界面
+    QVector<QList<QString>> recentChatInfo;
+    sqlite->getRecentChatInfo(GlobalDate::currentUserName(),recentChatInfo); //读取所有最近聊天信息
+    homepage->cleanRecentChatItems();                   //清空原有项
+    homepage->addRecentChatItems(recentChatInfo);       //添加所有新项
 }
 
 AllPageListWidget::~AllPageListWidget()

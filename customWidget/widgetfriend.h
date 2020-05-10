@@ -4,7 +4,10 @@
 #include <QWidget>
 #include <QListWidget>
 #include <QDebug>
+#include <QMap>
+
 #include "customUI/friendlistitem.h"
+#include "../globaldate.h"
 
 namespace Ui {
 class WidgetFriend;
@@ -17,6 +20,7 @@ class WidgetFriend : public QWidget
 public:
     explicit WidgetFriend(QWidget *parent = nullptr);
     ~WidgetFriend();
+    void initFriendList(QMap<QString,QString> &map = GlobalDate::getFriendNameImageMap());
 
 signals:
     void sigItemClicked(QString);

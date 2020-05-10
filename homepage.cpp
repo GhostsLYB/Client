@@ -175,3 +175,8 @@ void HomePage::onDownloadFile(QString filePath)
     });
     recvSendFileSocket->connectToHost("39.105.105.251", 5188);
 }
+
+void HomePage::onInitFriendList(QMap<QString,QString> &map)
+{
+    wid_friend->initFriendList(map);
+}
