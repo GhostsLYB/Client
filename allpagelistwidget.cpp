@@ -2,6 +2,8 @@
 #include "ui_allpagelistwidget.h"
 #include <QFile>
 
+QString allResourceFilePath = "E:/always/IM/file/";
+
 AllPageListWidget::AllPageListWidget(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::AllPageListWidget)
@@ -34,6 +36,11 @@ AllPageListWidget::AllPageListWidget(QWidget *parent) :
     connect(homepage,&HomePage::sigSetMineInfo,this,&AllPageListWidget::onSetMineInfo);
     connect(this,&AllPageListWidget::sigGetTableDataFinish,homepage,&HomePage::onSetMineInfo);
     connect(homepage,&HomePage::sigShowAllInfo,this,&AllPageListWidget::onShowAllInfo);
+    connect(homepage,&HomePage::sigSearchShow,[&](){
+        ui->tabWidget->setCurrentIndex(6);
+        le_input->clear();
+        lb_waringInfo->setText("input user name for search!");
+    });
 
     //chat page index = 3
     chatPage = new ChatPage(ctrl);
@@ -64,6 +71,7 @@ AllPageListWidget::AllPageListWidget(QWidget *parent) :
         sqlite->getRecentChatInfo(GlobalDate::currentUserName(),recentChatInfo); //读取所有最近聊天信息
         homepage->cleanRecentChatItems();                   //清空原有项
         homepage->addRecentChatItems(recentChatInfo);       //添加所有新项
+        ui->tabWidget->setCurrentIndex(2);    //删除好友后返回到homepage
     });
     //detailedInfo page index = 5
     detailedInfoPage = new DetailedInfoPage(ctrl, sqlite, ui->tab_allInfo);
@@ -72,6 +80,18 @@ AllPageListWidget::AllPageListWidget(QWidget *parent) :
     ui->tab_allInfo->layout()->setSpacing(0);
     connect(detailedInfoPage,&DetailedInfoPage::sigBackToMine,[&](){
         ui->tabWidget->setCurrentIndex(2);
+    });
+    //search page index = 6
+    btn_searchBack = ui->btn_searchBack;
+    btn_search = ui->btn_search;
+    btn_search->setEnabled(false);
+    le_input = ui->le_input;
+    lb_waringInfo = ui->lb_waringInfo;
+    connect(le_input,&QLineEdit::textChanged,[&](QString text){
+        if(!text.isEmpty())
+            btn_search->setEnabled(true);
+        else
+            btn_search->setEnabled(false);
     });
     if(isLogin)
         ui->tabWidget->setCurrentIndex(2);
@@ -86,10 +106,13 @@ AllPageListWidget::AllPageListWidget(QWidget *parent) :
 //与好友聊天界面
 void AllPageListWidget::onChatWith(QString friendName)
 {
+    QFileInfo info(allResourceFilePath+GlobalDate::currentUserName()+"_chatInfo.txt");
+    if(info.isFile())//聊天记录备份文件存在时导入
+        sqlite->importSyncData(GlobalDate::currentUserName());
     ui->tabWidget->setCurrentIndex(3);
     chatPage->listWidget->clear();
     chatPage->lb_friendName->setText(friendName);
-    QList<ChatInfo> list;
+    QList<ChatInfo> list;//获取与该用户的聊天信息
     sqlite->getDataList(sqlite->getDatabaseName()+"_chatInfo",nullptr,&list,friendName);
     if(!list.isEmpty())
         chatPage->initInfo(&list);
@@ -115,14 +138,15 @@ void AllPageListWidget::onChatMsgInsert(ChatInfo chatInfo)
 
 void AllPageListWidget::onLoginSuccessed(QString userName)
 {
-//    登陆成功前要同步服务器数据
-//    sqlite->importTxtForChatInfo();
-//    登陆成功后要从数据库中读取数据（最最近聊天，好友列表）显示
     ui->tabWidget->setCurrentIndex(2);
     homepage->setIndex(0);
     homepage->setTopShow();
     homepage->setUserName(userName);
     sqlite->setDatabase(userName);  //连接本地数据库
+    //登陆成功前要同步服务器数据
+    sqlite->importSyncData(userName);
+    //下载聊天记录文件
+    homepage->onDownloadFile(allResourceFilePath+userName+"_chatInfo.txt");
     //读取表recent_chatInfo所有内容显示在最近聊天界面
     QVector<QList<QString>> recentChatInfo;
     sqlite->getRecentChatInfo(userName,recentChatInfo); //读取所有最近聊天信息
@@ -175,4 +199,22 @@ void AllPageListWidget::onRecvDeleteFriend(QString msg)
 AllPageListWidget::~AllPageListWidget()
 {
     delete ui;
+}
+
+void AllPageListWidget::on_btn_searchBack_clicked()
+{
+//    if(searchBackPage == 0)
+    ui->tabWidget->setCurrentIndex(2);//主页面
+}
+
+void AllPageListWidget::on_btn_search_clicked()
+{
+    qDebug() << "btn search clicked user is " << le_input->text();
+    //判断用户是否存你在
+    if(sqlite->userIsExist(le_input->text())){
+        onShowUserInfo(le_input->text());
+    }
+    else {
+        lb_waringInfo->setText(QString("user \"%1\" is not exist!").arg(le_input->text()));
+    }
 }

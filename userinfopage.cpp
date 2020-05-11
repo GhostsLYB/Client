@@ -45,15 +45,24 @@ void UserInfoPage::on_btn_cancle_clicked()
 void UserInfoPage::setUserName(QString userName){
     lb_userName->setText(perUserName+userName);
     lb_remark->setText(userName);
-    if(userName == GlobalDate::currentUserName())
+    if(userName == GlobalDate::currentUserName())//显示自己的信息
     {
+        btn_sendMsg->show();
+        ui->line_center->hide();
         btn_deleteFriend->hide();
+
     }       //是好友
+    //是好友关系
     else if(sqlite->isFriend(GlobalDate::currentUserName(),userName)) {
+        btn_sendMsg->show();
+        ui->line_center->show();
         btn_deleteFriend->show();
         btn_deleteFriend->setText("删除好友");
     }
+    //不是好友关系
     else {
+        btn_sendMsg->hide();
+        ui->line_center->hide();
         btn_deleteFriend->show();
         btn_deleteFriend->setText("添加好友");
     }
@@ -108,9 +117,20 @@ void UserInfoPage::on_btn_deleteFriend_clicked()
         ctrl->sock->send(msg);
         emit sigDeleteFriend();
     }
-    else{
+    else{//添加好友
         qDebug() << "add friend button is clicked";
-
+        char ch[100] = {0};
+        //添加好友请求消息格式：总长+类型11+名1长+名1+名2长+名2
+        QString name = GlobalDate::currentUserName();
+        QString name2 = lb_remark->text();
+        sprintf(ch,"%4d%4d%4d%s%4d%s"
+                ,12+qstrlen(name.toUtf8().data())+qstrlen(name2.toUtf8().data())
+                ,11
+                ,qstrlen(name.toUtf8().data()),name.toUtf8().data()
+                ,qstrlen(name2.toUtf8().data()),name2.toUtf8().data());
+        qDebug() << "UserInfoPage msg = " << ch;
+        QString msg = QString(ch);
+        ctrl->sock->send(msg);
     }
 
 }

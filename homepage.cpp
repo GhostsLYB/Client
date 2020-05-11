@@ -15,7 +15,10 @@ HomePage::HomePage(Control * parentTrol, QWidget *parent) :
         ctrl = new Control(this);
     else
         ctrl = parentTrol;
-
+    //homePageTop
+    connect(ui->wid_homePageTop,&HomePageTop::sigSearch,[&](){
+        emit sigSearchShow();
+    });
     //最近聊天好友列表
     wid_main = new WidgetMain(ui->tab_main);
     wid_main->layout()->setMargin(0);

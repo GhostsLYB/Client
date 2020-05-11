@@ -32,6 +32,7 @@ private:
     void processResponse(int, QString&);
     bool processRegisterMsg(QString & msg);
     void processLoginMsg(QString & msg);     //msg成功是“yes”,密码不正确是“no”,不存在用户是“null”
+    void saveFileSection(QByteArray &bta);
 public slots:
     void onRead();
     void onFileSockConnected();

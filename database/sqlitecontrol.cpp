@@ -1,6 +1,8 @@
 #include "sqlitecontrol.h"
 #include "sqlitecontrol.h"
 
+QString resourceFilePath = "E:/always/IM/file/";
+
 SqliteControl::SqliteControl(QObject * parent)
     :QObject (parent)
 {
@@ -514,30 +516,148 @@ bool SqliteControl::update(QString tableName, QString conditionFieldName,
     return true;
 }
 
-//bool SqliteControl::importTxtForChatInfo()
-//{
-//    if(!m_DataBase.isOpen())
-//        return false;
-//    QString sql = "LOAD DATA INFILE 'E:/always/Linux/root_chatInfo.txt' "
-//                  "INTO TABLE root_chatInfo "
-//                  "FIELDS "
-//                  "TERMINATED BY ',' "
-//                  "ENCLOSED BY '\"' "
-//                  "LINES "
-//                  "TERMINATED BY '\r\n'";
-//    qDebug() << sql;
-//    QSqlQuery query = QSqlQuery(m_DataBase);
-//    bool ret = query.exec(sql);
-//    if(ret)
-//        qDebug() << "import successed";
-//    else {
-//        qDebug() << "import fail";
-//    }
+void SqliteControl::importSyncData(QString loginUserName)
+{
+    if(!m_DataBase.isOpen())
+        return;
+    QString currPath = resourceFilePath;
+    //读取文件并存储到数据库，导入完成后删除文件
+    QList<QString> fileList;
+    fileList << QString("%1%2_chatInfo.txt").arg(currPath).arg(loginUserName)
+             << QString("%1%2_recent_chatList.txt").arg(currPath).arg(loginUserName)
+             << QString("%1%2_user_friendList.txt").arg(currPath).arg(loginUserName)
+             << QString("%1user_info.txt").arg(currPath)
+             << QString("%1users.txt").arg(currPath);
+    QList<QString> tableNameList;
+    tableNameList << QString("%1_chatInfo").arg(loginUserName)
+                  << "recent_chatList" << "user_friendList" << "user_info" << "users";
+    QString sql = "";
+    QList<QString> info;
+    QSqlQuery query(m_DataBase);
+    for (int i = 0; i < fileList.count(); i++) {
+        QFile file(fileList[i]);
+        if(file.open(QIODevice::ReadOnly)){
+            qDebug() << "file [" << fileList[i] << "] open success!";
+            QByteArray allData = file.readAll();    //读取左右数据
+            if(i == 0){//userName_chatInfo表
+                //"48" "root" "3" "send" "时间格式" "" "2020-05-04 11:52:38"
+                QList<QByteArray> list = allData.split('"');
+                for(int j = 0; j < list.count() - 1; ){  //所有数据在list中
+                    info.clear();
+                    for(int n = 0; n < 7 && j < list.count(); n++){//一条记录读取到info中
+                        info << QString(list[j+1]);
+                        j += 2;
+                    }
+                    if(info.count() == 7){//有七个字段时
+                        sql = QString("insert into %1 values(%2,'%3',%4,'%5','%6','%7','%8')")
+                                .arg(tableNameList[i])
+                                .arg(info[0].toInt()).arg(info[1]).arg(info[2].toInt())
+                                .arg(info[3]).arg(info[4]).arg(info[5]).arg(info[6]);
+//                        qDebug() << sql;
+                        query.exec(sql);
+                    }
+                }
+            }
+            else if(i == 1){//recent_chatList表
+                //"3" "root" "root" "this is root" "2020-05-05 13:13:11" "0"
+                QList<QByteArray> list = allData.split('"');
+                for(int j = 0; j < list.count() - 1; ){  //所有数据在list中
+                    info.clear();
+                    for(int n = 0; n < 6 && j < list.count(); n++){//一条记录读取到info中
+                        info << QString(list[j+1]);
+                        j += 2;
+                    }
+                    if(info.count() == 6){//有6个字段时
+                        sql = QString("insert into %1 values(%2,'%3','%4','%5','%6','%7')")
+                                .arg(tableNameList[i])
+                                .arg(info[0].toInt()).arg(info[1]).arg(info[2])
+                                .arg(info[3]).arg(info[4]).arg(info[5]);
+//                        qDebug() << sql;
+                        query.exec(sql);
+                    }
+                }
+            }
+            else if(i == 2){//user_friendList表
+                //"1" "ghost" "root" "2020-05-11 11:15:01"
+                QList<QByteArray> list = allData.split('"');
+                for(int j = 0; j < list.count() - 1; ){  //所有数据在list中
+                    info.clear();
+                    for(int n = 0; n < 4 && j < list.count(); n++){//一条记录读取到info中
+                        info << QString(list[j+1]);
+                        j += 2;
+                    }
+                    if(info.count() == 4){//有4个字段时
+                        sql = QString("insert into %1 values(%2,'%3','%4','%5')")
+                                .arg(tableNameList[i])
+                                .arg(info[0].toInt()).arg(info[1]).arg(info[2])
+                                .arg(info[3]);
+                        qDebug() << sql;
+                        query.exec(sql);
+                    }
+                }
+            }
+            else if(i == 3){//user_info表
+                //"1" "root" "IM0001" "/tmp/图片1.png" "人之初，性本善。" "哈尔滨巴彦" "2020-03-14 12:12:12"
+                QList<QByteArray> list = allData.split('"');
+                for(int j = 0; j < list.count() - 1; ){  //所有数据在list中
+                    info.clear();
+                    for(int n = 0; n < 7 && j < list.count(); n++){//一条记录读取到info中
+                        info << QString(list[j+1]);
+                        j += 2;
+                    }
+                    if(info.count() == 7){//有7个字段时
+                        //第四个字段是路径 需要更改
+                        info[3] = resourceFilePath + info[3].mid(info[3].lastIndexOf('/')+1);
+                        sql = QString("insert into %1 values(%2,'%3','%4','%5','%6','%7','%8')")
+                                .arg(tableNameList[i])
+                                .arg(info[0].toInt()).arg(info[1]).arg(info[2])
+                                .arg(info[3]).arg(info[4]).arg(info[5]).arg(info[6]);
+                        qDebug() << sql;
+                        query.exec(sql);
+                    }
+                }
+            }
+            else if(i == 4){//users表
+                //"1" "root" "男" "20" "123456@qq.com" "182111111111"
+                QList<QByteArray> list = allData.split('"');
+                for(int j = 0; j < list.count() - 1; ){  //所有数据在list中
+                    info.clear();
+                    for(int n = 0; n < 6 && j < list.count(); n++){//一条记录读取到info中
+                        info << QString(list[j+1]);
+                        j += 2;
+                    }
+                    if(info.count() == 6){//有6个字段时
+                        sql = QString("insert into %1 values(%2,'%3','%4',%5,'%6','%7')")
+                                .arg(tableNameList[i])
+                                .arg(info[0].toInt()).arg(info[1]).arg(info[2])
+                                .arg(info[3].toInt()).arg(info[4]).arg(info[5]);
+                        qDebug() << sql;
+                        query.exec(sql);
+                    }
+                }
+            }
+            file.remove();
+        }
+        else {
+            qDebug() << "file [" << fileList[i] << "] open fail!";
+        }
+    }
+}
 
-//}
-
-
-
-
-
-
+bool SqliteControl::userIsExist(QString userName)
+{
+    bool bRet = false;
+    if (!m_DataBase.open())
+        return false;
+    QString sql = QString("select count(*) from user_info where username = '%1'").arg(userName);
+    QSqlQuery query(m_DataBase);
+    query.exec(sql);
+    if (query.next())
+    {
+        if (query.value(0).toInt() > 0)
+        {
+            bRet = true;
+        }
+    }
+    return bRet;
+}

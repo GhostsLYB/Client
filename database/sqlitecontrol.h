@@ -5,6 +5,7 @@
 
 #include <QObject>
 #include <QCoreApplication>
+#include <QDir>
 #include <QtSql/QSqlDatabase>
 #include <QtSql/QSqlQuery>
 #include <QtSql/QSqlDriver>
@@ -54,7 +55,8 @@ public:
     QString getDatabaseName();
     bool update(QString tableName,QString conditionFieldName,QString condeitonValue,
                 QString modifyFieldName,QString modifyValue);
-//    bool importTxtForChatInfo();
+    void importSyncData(QString loginUserName);
+    bool userIsExist(QString userName);
 private:
     QSqlDatabase m_DataBase;
 private:

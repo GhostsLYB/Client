@@ -21,9 +21,9 @@ WidgetFriend::WidgetFriend(QWidget *parent) :
 
 void WidgetFriend::initFriendList(QMap<QString,QString> &map)
 {
-    if(map.size() < 1)
-        return;
     listWidget->clear();
+    if(map.count() < 1)
+        return;
     QMap<QString,QString>::iterator iter = map.begin();
     int i = 0;
     for (;iter != map.end(); iter++) {
