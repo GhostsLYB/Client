@@ -10,11 +10,17 @@ CustomListWidgetItem::CustomListWidgetItem(QWidget *parent,QString image,QString
     ui->setupUi(this);
 
     lb_image = ui->lb_image;
+    lb_image->setAttribute(Qt::WA_TransparentForMouseEvents,true);
     lb_newMsgNum = ui->lb_newMsgNum;
+    lb_newMsgNum->setAttribute(Qt::WA_TransparentForMouseEvents,true);
     lb_friendName = ui->lb_friendName;
+    lb_friendName->setAttribute(Qt::WA_TransparentForMouseEvents,true);
     lb_lastTime = ui->lb_lastTime;
+    lb_lastTime->setAttribute(Qt::WA_TransparentForMouseEvents,true);
     lb_lastMsg = ui->lb_lastMsg;
+    lb_lastMsg->setAttribute(Qt::WA_TransparentForMouseEvents,true);
     lb_voiceIcon = ui->lb_voice;
+    lb_voiceIcon->setAttribute(Qt::WA_TransparentForMouseEvents,true);
     if(image != ""){
         QPixmap pix(image);
         lb_image->setPixmap(pix);

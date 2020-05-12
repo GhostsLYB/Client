@@ -18,6 +18,8 @@ AllPageListWidget::AllPageListWidget(QWidget *parent) :
     connect(ctrl->sock->socket(),&QTcpSocket::disconnected,ctrl->sock,&SocketControl::onDisconnected);
     connect(ctrl->sock->socket(),&QTcpSocket::readyRead,ctrl,&Control::onRead);
     connect(ctrl,&Control::sigRecvDeleteFriend,this,&AllPageListWidget::onRecvDeleteFriend);
+    connect(ctrl,&Control::sigRecvAddFriend,this,&AllPageListWidget::onRecvAddFriend);
+    connect(ctrl,&Control::sigRecvAddFriendResponse,this,&AllPageListWidget::onRecvAddFriendResponse);
     //login page index = 0
     login = new Login(ctrl);
     ui->tab_login->layout()->addWidget(login);
@@ -41,7 +43,17 @@ AllPageListWidget::AllPageListWidget(QWidget *parent) :
         le_input->clear();
         lb_waringInfo->setText("input user name for search!");
     });
-
+    connect(homepage,&HomePage::syncFileDownloadFinish,[&](){
+        sqlite->importSyncData(GlobalDate::currentUserName());
+        //读取表recent_chatInfo所有内容显示在最近聊天界面
+        QVector<QList<QString>> recentChatInfo;
+        sqlite->getRecentChatInfo(GlobalDate::currentUserName(),recentChatInfo);
+        homepage->cleanRecentChatItems();                   //清空原有项
+        homepage->addRecentChatItems(recentChatInfo);       //添加所有新项
+        //初始化好友列表
+        sqlite->getFriendList(GlobalDate::getFriendNameImageMap());
+        homepage->onInitFriendList(GlobalDate::getFriendNameImageMap());
+    });
     //chat page index = 3
     chatPage = new ChatPage(ctrl);
     ui->tab_chat->layout()->addWidget(chatPage);
@@ -72,6 +84,9 @@ AllPageListWidget::AllPageListWidget(QWidget *parent) :
         homepage->cleanRecentChatItems();                   //清空原有项
         homepage->addRecentChatItems(recentChatInfo);       //添加所有新项
         ui->tabWidget->setCurrentIndex(2);    //删除好友后返回到homepage
+    });
+    connect(userInfoPage,&UserInfoPage::sigShowHomePage,[&](){
+        ui->tabWidget->setCurrentIndex(2);
     });
     //detailedInfo page index = 5
     detailedInfoPage = new DetailedInfoPage(ctrl, sqlite, ui->tab_allInfo);
@@ -122,40 +137,49 @@ void AllPageListWidget::onChatWith(QString friendName)
 void AllPageListWidget::onShowUserInfo(QString userName, int backPage = 0)
 {
     ui->tabWidget->setCurrentIndex(4);//显示用户信息界面
-    if(userName != userInfoPage->getUserName()){
-        userInfoPage->setUserName(userName);
-        userInfoPage->setBackPage(backPage);
-        QList<QString> data;
-        sqlite->getTableData("user_info", userName, data);
-        userInfoPage->setUserInfo(data);
-    }
+    userInfoPage->setUserName(userName);
+    userInfoPage->setBackPage(backPage);
+    QList<QString> data;
+    sqlite->getTableData("user_info", userName, data);
+    userInfoPage->setUserInfo(data);
 }
 
 void AllPageListWidget::onChatMsgInsert(ChatInfo chatInfo)
 {
     sqlite->insertData(sqlite->getDatabaseName()+"_chatInfo",nullptr,&chatInfo);
+    //插入聊天信息后需要更新最近聊天信息界面
+    QVector<QList<QString>> recentChatInfo;
+    sqlite->getRecentChatInfo(GlobalDate::currentUserName(),recentChatInfo); //读取所有最近聊天信息
+    homepage->cleanRecentChatItems();                   //清空原有项
+    homepage->addRecentChatItems(recentChatInfo);       //添加所有新项
 }
 
 void AllPageListWidget::onLoginSuccessed(QString userName)
 {
+    qDebug() << "login user:"<<userName;//登陆成功
+    //第一时间更改当前登陆用户名
+    GlobalDate::setCurrentUserName(userName);
     ui->tabWidget->setCurrentIndex(2);
     homepage->setIndex(0);
     homepage->setTopShow();
     homepage->setUserName(userName);
     sqlite->setDatabase(userName);  //连接本地数据库
-    //登陆成功前要同步服务器数据
-    sqlite->importSyncData(userName);
     //下载聊天记录文件
     homepage->onDownloadFile(allResourceFilePath+userName+"_chatInfo.txt");
+    homepage->onDownloadFile(allResourceFilePath+userName+"_recent_chatList.txt");
+    homepage->onDownloadFile(allResourceFilePath+userName+"_user_friendList.txt");
+    homepage->onDownloadFile(allResourceFilePath+"user_info.txt");
+    homepage->onDownloadFile(allResourceFilePath+"users.txt");
+
+    //sqlite->importSyncData(userName);//同步服务器数据
     //读取表recent_chatInfo所有内容显示在最近聊天界面
-    QVector<QList<QString>> recentChatInfo;
-    sqlite->getRecentChatInfo(userName,recentChatInfo); //读取所有最近聊天信息
-    homepage->cleanRecentChatItems();                   //清空原有项
-    homepage->addRecentChatItems(recentChatInfo);       //添加所有新项
-    qDebug() << "login user:"<<userName;//登陆成功
-    GlobalDate::setCurrentUserName(userName);
-    sqlite->getFriendList(GlobalDate::getFriendNameImageMap());//初始化好友列表
-    homepage->onInitFriendList(GlobalDate::getFriendNameImageMap());
+//    QVector<QList<QString>> recentChatInfo;
+//    sqlite->getRecentChatInfo(userName,recentChatInfo); //读取所有最近聊天信息
+//    homepage->cleanRecentChatItems();                   //清空原有项
+//    homepage->addRecentChatItems(recentChatInfo);       //添加所有新项
+//    //初始化好友列表
+//    sqlite->getFriendList(GlobalDate::getFriendNameImageMap());
+//    homepage->onInitFriendList(GlobalDate::getFriendNameImageMap());
 }
 
 //获取数据库中表格的数据
@@ -175,15 +199,16 @@ void AllPageListWidget::onShowAllInfo(QString userName, int targetPage)
 //处理接受到的好友删除消息
 void AllPageListWidget::onRecvDeleteFriend(QString msg)
 {
+    QByteArray bta = msg.toUtf8();
     QString userName;
     QString userName2;
-    int len = msg.left(4).toInt();
-    msg.remove(0,4);
-    userName = msg.left(len);
-    msg.remove(0,len);
-    len = msg.left(4).toInt();
-    msg.remove(0,4);
-    userName2 = msg.left(len);
+    int len = bta.left(4).toInt();
+    bta.remove(0,4);
+    userName = bta.left(len);
+    bta.remove(0,len);
+    len = bta.left(4).toInt();
+    bta.remove(0,4);
+    userName2 = bta.left(len);
     qDebug() << userName << " " << userName2;
     sqlite->deleteFriend(userName, userName2);
     //刷新好友列表页面
@@ -194,6 +219,63 @@ void AllPageListWidget::onRecvDeleteFriend(QString msg)
     sqlite->getRecentChatInfo(GlobalDate::currentUserName(),recentChatInfo); //读取所有最近聊天信息
     homepage->cleanRecentChatItems();                   //清空原有项
     homepage->addRecentChatItems(recentChatInfo);       //添加所有新项
+}
+
+void AllPageListWidget::onRecvAddFriend(QString msg)
+{
+    QByteArray bta = msg.toUtf8();
+    QString userName;
+    QString userName2;
+    int len = bta.left(4).toInt();
+    bta.remove(0,4);
+    userName = bta.left(len);
+    bta.remove(0,len);
+    len = bta.left(4).toInt();
+    bta.remove(0,4);
+    userName2 = bta.left(len);//"   9刘彦斌   4root"
+    //用户userName请求添加用户userName2
+    qDebug() << userName << " " << userName2;
+    QMessageBox::StandardButton btn = QMessageBox::question(this,"Add Request"
+                                     ,QString("From %1's add request").arg(userName));
+    sqlite->importSyncData(GlobalDate::currentUserName());//导入可能的新数据
+    if(btn == QMessageBox::StandardButton::Yes){//同意添加
+        qDebug() << userName2 << "is agree added";
+        sqlite->insertFriendList(userName,userName2);//插入好友列表
+        char ch[100] = {0};
+        //响应添加好友成功消息格式 总长+类型12+名1长+请求名+名2长+响应名(msg:"   9刘彦斌   4root")
+        sprintf(ch,"%4d%4d%s",4+qstrlen(msg.toUtf8().data()),12,msg.toUtf8().data());
+        msg = QString(ch);
+        qDebug() << "send msg = [" << msg << "]";
+        ctrl->sock->send(msg);
+        //刷新通讯录好友表列表
+        sqlite->getFriendList(GlobalDate::getFriendNameImageMap());
+        homepage->onInitFriendList(GlobalDate::getFriendNameImageMap());
+    }
+    else{   //不同意添加
+        //什么也不做
+        qDebug() << userName2 << "is not agree added";
+    }
+}
+
+void AllPageListWidget::onRecvAddFriendResponse(QString msg)
+{
+    QByteArray bta = msg.toUtf8();
+    QString userName;
+    QString userName2;
+    int len = bta.left(4).toInt();
+    bta.remove(0,4);
+    userName = bta.left(len);
+    bta.remove(0,len);
+    len = bta.left(4).toInt();
+    bta.remove(0,4);
+    userName2 = bta.left(len);//"   9刘彦斌   4root"
+    //用户userName2响应用户userName的同意添加请求
+    qDebug() << userName << " " << userName2;
+    //存入数据库
+    sqlite->insertFriendList(userName,userName2);
+    //刷新通讯录好友列表
+    sqlite->getFriendList(GlobalDate::getFriendNameImageMap());
+    homepage->onInitFriendList(GlobalDate::getFriendNameImageMap());
 }
 
 AllPageListWidget::~AllPageListWidget()

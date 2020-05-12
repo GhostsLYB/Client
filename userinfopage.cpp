@@ -130,7 +130,11 @@ void UserInfoPage::on_btn_deleteFriend_clicked()
                 ,qstrlen(name2.toUtf8().data()),name2.toUtf8().data());
         qDebug() << "UserInfoPage msg = " << ch;
         QString msg = QString(ch);
-        ctrl->sock->send(msg);
+        if(ctrl->sock->send(msg))//消息发送成功
+        {
+            QMessageBox::information(this,"imformaiton","request has been send");
+        }
+        emit sigShowHomePage();//显示homepage界面
     }
 
 }

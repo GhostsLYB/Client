@@ -5,6 +5,7 @@
 #include <QTabBar>
 #include <QLineEdit>
 #include <QLabel>
+#include <QMessageBox>
 
 #include "homepage.h"
 #include "login.h"
@@ -40,6 +41,8 @@ public slots:
     void onSetMineInfo(QString, QString, QList<QString>&);
     void onShowAllInfo(QString, int targetPage);
     void onRecvDeleteFriend(QString msg);
+    void onRecvAddFriend(QString msg);
+    void onRecvAddFriendResponse(QString msg);
 private slots:
     void on_btn_searchBack_clicked();
 

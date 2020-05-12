@@ -30,6 +30,7 @@ void Login::btn_loginClicked()
         msg = "";
         return;
     }
+    qDebug() << "login page msg = " << msg;
     if(SocketControl::isconnected())
         SocketControl::socket()->write(msg.toUtf8());
     else

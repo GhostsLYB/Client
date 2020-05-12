@@ -6,6 +6,7 @@
 #include <QPushButton>
 #include <QBoxLayout>
 #include <QToolButton>
+#include <QMessageBox>
 #include "socket/control.h"
 #include "database/sqlitecontrol.h"
 #include "globaldate.h"
@@ -31,6 +32,7 @@ signals:
     void sigFriendList();
     void sigChatWith(QString);
     void sigDeleteFriend();
+    void sigShowHomePage();
 
 private slots:
     void on_btn_cancle_clicked();

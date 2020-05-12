@@ -2,10 +2,11 @@
 #include "ui_chatpage.h"
 #include <QCursor>
 
-ChatPage::ChatPage(Control * parentCtrl, QWidget *parent) :
+ChatPage::ChatPage(Control * parentCtrl, SqliteControl *sqlite, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::ChatPage),
-    ctrl(parentCtrl)
+    ctrl(parentCtrl),
+    sqlite(sqlite)
 {
     ui->setupUi(this);
     connect(ctrl,&Control::sigRecvMessage,this,&ChatPage::onRecvMessage);
@@ -125,31 +126,32 @@ void ChatPage::onRecvMessage(QString msg, int flag)
 {
     //msg文字格式："   4root   9你好吗"
     //语音格式："   4root   8filePath"
-    qDebug() << "chatPage recv :"<<msg;
-    QString len = msg.left(4);              //对方用户名长度
-    msg.remove(0,4);
-    QString peerName = msg.left(len.toUtf8().toInt());  //对方名
-    msg.remove(0,len.toUtf8().toInt());
-    len = msg.left(4);                      //消息长度
-    msg.remove(0,4);                        //此时msg为消息
+    QByteArray bta = msg.toUtf8();
+    qDebug() << "chatPage recv :"<<bta;
+    QString len = bta.left(4);              //对方用户名长度
+    bta.remove(0,4);
+    QString peerName = bta.left(len.toUtf8().toInt());  //对方名
+    bta.remove(0,len.toUtf8().toInt());
+    len = bta.left(4);                      //消息长度
+    bta.remove(0,4);                        //此时bta为消息
     QString wordMsg = "";
     QString url = "";
     if(flag == 3)
-        wordMsg = msg;
+        wordMsg = bta;
     else if (flag == 7) {
-        url = msg;
+        url = bta;
     }
     ChatInfo chatInfo = {peerName,flag,"recv",wordMsg,url,
                          QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss")};
     emit sigRecv(chatInfo);
 
-    msg.replace("&quot;","\"");//将单引号和双引号替换
-    msg.replace("&apos;","'");
-    qDebug() << "recv html = [" << msg << "]";
+    bta.replace("&quot;","\"");//将单引号和双引号替换
+    bta.replace("&apos;","'");
+//    qDebug() << "recv html = [" << bta << "]";
     if(lb_friendName->text() == peerName)   //正处于与该用户的聊天页面，则添加一天聊天记录
     {
         addToListWidget(lb_friendName->text(),flag,"recv",
-                        msg,"",chatInfo.time);
+                        bta,"",chatInfo.time);
     }
 }
 

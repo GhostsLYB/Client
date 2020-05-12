@@ -27,6 +27,9 @@ signals:
     void sigLoginResponse(QString);
     void sigRecvMessage(QString msg, int flag);
     void sigRecvDeleteFriend(QString msg);
+    void sigRecvAddFriend(QString msg);
+    void sigRecvAddFriendResponse(QString msg);
+    void sigOneFileRecvFinish(QString filePath);
 //    void sigDeleteSock(QTcpSocket*);
 private:
     void processResponse(int, QString&);
@@ -42,6 +45,7 @@ private:
     bool isFirstRecvFile;
     long recvFileSize;
     long recvSize;
+    QString currentRecvFilePath;
     QMap<QString, QTcpSocket*> fileSockMap;
 };
 

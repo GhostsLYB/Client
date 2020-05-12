@@ -82,13 +82,14 @@ void Control::sendFileRequest(QTcpSocket ** sock, QString fileName){
              [4]+[ 4]+[4]+[ *  ]                  [   4  ]+[  * ]+[  8  ]*/
     char sendbuf[100] = {0};
     qDebug() << fileName << "sendFileRequest";
-    QString filePath = "E:\\always\\IM\\file\\" +fileName;
+    QString filePath = controlResouceFilePath +fileName;
     file = new QFile(filePath);
     file->remove(); //删除原有同名文件文件
     if(!file->open(QIODevice::WriteOnly | QIODevice::Append))
     {
         qDebug() << "file [" << filePath << "[ open fail";
     }
+    currentRecvFilePath = filePath;
     qDebug() << "file path is [" << filePath << "]";
     int fileNameSize = qstrlen(fileName.toUtf8().data());
     sprintf(sendbuf,"%4d%4d%4d%s", 8+fileNameSize, 5, fileNameSize, fileName.toUtf8().data());
@@ -115,8 +116,9 @@ void Control::recvFile(QTcpSocket **sock){
         if(recvSize >= recvFileSize){
             file->close();
             isFirstRecvFile = true;
-            recvFileSize = 0;
+            recvFileSize = 0;   //接受文件的总大小清空
             recvSize = 0;
+            emit sigOneFileRecvFinish(currentRecvFilePath);
         }
     }
 }
@@ -158,6 +160,17 @@ void Control::processResponse(int flag, QString &msg)    //msg格式 ：信息�
     case 10:{
         qDebug() << "recv delete friend = " << msg;
         emit sigRecvDeleteFriend(msg);
+        return;
+    }
+    case 11:{
+        qDebug() << "recv add friend = " << msg;
+        emit sigRecvAddFriend(msg);
+        return;
+    }
+    case 12:{
+        qDebug() << "recv add friend response = " << msg;
+        emit sigRecvAddFriendResponse(msg);
+        return;
     }
     default: return;
     }

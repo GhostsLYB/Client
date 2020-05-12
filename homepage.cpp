@@ -1,10 +1,12 @@
 #include "homepage.h"
 #include "ui_homepage.h"
 
+QString homePageResouceFilePath = "E:/always/IM/file/";
+
 HomePage::HomePage(Control * parentTrol, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::HomePage),
-    recvSendFileSocket(nullptr)
+    recvSendFileSocket(new QTcpSocket())
 {
     ui->setupUi(this);
     ui->tabWidget->tabBar()->hide();
@@ -15,6 +17,32 @@ HomePage::HomePage(Control * parentTrol, QWidget *parent) :
         ctrl = new Control(this);
     else
         ctrl = parentTrol;
+    //连接成功时一定有文件发送，此时发送文件下载请求
+    connect(recvSendFileSocket, &QTcpSocket::connected,[&](){
+        QString fileName = recvFilePathQueue.dequeue();
+        fileName = fileName.mid(fileName.lastIndexOf('/')+1);
+        ctrl->sendFileRequest(&recvSendFileSocket, fileName);
+    });
+    //有数据读取时直接存入当前打开的文件（该文件由sendFileRequest函数指定并打开）
+    connect(recvSendFileSocket, &QTcpSocket::readyRead, [&](){
+        ctrl->recvFile(&recvSendFileSocket);
+    });
+    connect(ctrl,&Control::sigOneFileRecvFinish,[&](QString filePath){
+        if(filePath == (homePageResouceFilePath+"users.txt")){
+            //同步文件下载完成
+            emit syncFileDownloadFinish();
+        }
+        if(recvFilePathQueue.count() > 0){//还有文件需要下载
+            //发送下一个文件
+            QString fileName = recvFilePathQueue.dequeue();
+            fileName = fileName.mid(fileName.lastIndexOf('/')+1);
+            ctrl->sendFileRequest(&recvSendFileSocket, fileName);
+        }
+        else        //没有文件时断开连接
+        {
+            recvSendFileSocket->disconnectFromHost();
+        }
+    });
     //homePageTop
     connect(ui->wid_homePageTop,&HomePageTop::sigSearch,[&](){
         emit sigSearchShow();
@@ -163,20 +191,17 @@ void HomePage::on_btn_recvFile_clicked()
 
 void HomePage::onDownloadFile(QString filePath)
 {
-    qDebug() << filePath;
-    static QString fileName = QString(filePath).mid(filePath.lastIndexOf('/')+1);
-    if(recvSendFileSocket != nullptr){
-        delete recvSendFileSocket;
-        recvSendFileSocket = nullptr;
+
+//    qDebug() << filePath;
+    recvFilePathQueue.enqueue(filePath);
+    static QString fileName;
+    fileName = QString(filePath).mid(filePath.lastIndexOf('/')+1);
+    if((recvSendFileSocket->state() != QTcpSocket::ConnectingState)
+       && (recvSendFileSocket->state() != QTcpSocket::ConnectedState)){
+        recvSendFileSocket->connectToHost("39.105.105.251", 5188);
     }
-    recvSendFileSocket = new QTcpSocket();
-    connect(recvSendFileSocket, &QTcpSocket::connected,[&](){
-        ctrl->sendFileRequest(&recvSendFileSocket, fileName);
-    });
-    connect(recvSendFileSocket, &QTcpSocket::readyRead, [&](){
-        ctrl->recvFile(&recvSendFileSocket);
-    });
-    recvSendFileSocket->connectToHost("39.105.105.251", 5188);
+
+
 }
 
 void HomePage::onInitFriendList(QMap<QString,QString> &map)

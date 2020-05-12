@@ -6,6 +6,7 @@
 #include <QFileDialog>
 #include <QVector>
 #include <QList>
+#include <QQueue>
 
 #include "customWidget/widgetmain.h"
 #include "customWidget/widgetfriend.h"
@@ -39,6 +40,7 @@ signals:
     void sigSetMineInfo(QString, QString, QList<QString>&);
     void sigShowAllInfo(QString, int targetPage);
     void sigSearchShow();
+    void syncFileDownloadFinish();
 
 public slots:
     void onChatItemClicked(QString);
@@ -62,6 +64,8 @@ private:
     QString         filePath;
     QString         userName;
     QList<QString>  mineInfo;
+
+    QQueue<QString> recvFilePathQueue;
 };
 
 #endif // HOMEPAGE_H

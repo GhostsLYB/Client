@@ -15,6 +15,7 @@
 #include <QVector>
 #include <QDebug>
 #include <QSqlRecord>
+#include <QDateTime>
 
 #include "globaldate.h"
 
@@ -57,6 +58,7 @@ public:
                 QString modifyFieldName,QString modifyValue);
     void importSyncData(QString loginUserName);
     bool userIsExist(QString userName);
+    bool insertFriendList(QString userName,QString userName2);
 private:
     QSqlDatabase m_DataBase;
 private:

@@ -109,12 +109,12 @@ delete from users where username = 'test';
             .arg(userName2).arg(userName2);
     qDebug() << sql;
     query.exec(sql);//删除本地好友列表数据
-    sql = QString("delete from user_info where username = '%1'").arg(userName2);
-    qDebug() << sql;
-    query.exec(sql);//删除本地账户信息
-    sql = QString("delete from users where username = '%1'").arg(userName2);
-    qDebug() << sql;
-    query.exec(sql);//删除本地用户信息
+//    sql = QString("delete from user_info where username = '%1'").arg(userName2);
+//    qDebug() << sql;
+//    query.exec(sql);//删除本地账户信息
+//    sql = QString("delete from users where username = '%1'").arg(userName2);
+//    qDebug() << sql;
+//    query.exec(sql);//删除本地用户信息
 }
 
 void SqliteControl::getFriendList(QMap<QString, QString> &map)
@@ -259,13 +259,47 @@ bool SqliteControl::insertData(QString tableName, const MyFriend *mData, const C
     qDebug() << insertString;
     QSqlQuery query(m_DataBase);
     bool success = query.exec(insertString);
-    if (!success) {
+    if(success){//插入user_chatInfo成功
+        //判断是否有与该用户的最近聊天记录
+        insertString = QString("select count(*) from recent_chatList where "
+                               "userName = '%1' and friendName = '%2'")
+                .arg(GlobalDate::currentUserName())
+                .arg(cData->peerName);
+        qDebug() << insertString;
+        success = query.exec(insertString);
+        if (success && query.next())
+        {
+            if (query.value(0).toInt() > 0){//有该好友的最近聊天聊天
+                insertString = QString("update recent_chatList set "
+                                       "lastMessage = '%1',lastTime = '%2' "
+                                       "where userName = '%3' and friendName = '%4'")
+                        .arg((cData->flag == 3)?cData->word:cData->url)
+                        .arg(QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss"))
+                        .arg(GlobalDate::currentUserName())
+                        .arg(cData->peerName);
+                qDebug() << insertString;
+                success = query.exec(insertString);
+            }
+            else {                          //没有该好友最近聊天记录
+                success = false;
+                insertString = QString("insert into recent_chatList "
+                                       "values(null,'%1','%2','%3','%4','0')")
+                        .arg(GlobalDate::currentUserName())
+                        .arg(cData->peerName)
+                        .arg((cData->flag == 3)?cData->word:cData->url)
+                        .arg(QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss"));
+                qDebug() << insertString;
+                success = query.exec(insertString);
+            }
+        }
+    }
+    else {
         QSqlError lastError = query.lastError();
         QString err = lastError.driverText();
         qDebug() << "insert data error: " << err;
         return false;
     }
-    return true;
+    return success;
 }
 
 bool SqliteControl::deleteData(QString tableName, QString userName)
@@ -658,6 +692,26 @@ bool SqliteControl::userIsExist(QString userName)
         {
             bRet = true;
         }
+    }
+    return bRet;
+}
+
+bool SqliteControl::insertFriendList(QString userName, QString userName2)
+{
+    bool bRet = false;
+    if(!m_DataBase.isOpen())
+        return bRet;
+    QString currTime = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
+    QString sql = QString("insert into user_friendList "
+                          "values(null,'%1','%2','%3')")
+            .arg(userName).arg(userName2).arg(currTime);
+    qDebug() << "sql = [" << sql << "]";
+    QSqlQuery query(m_DataBase);
+    bRet = query.exec(sql);
+    if(!bRet){
+        QSqlError lastError = query.lastError();
+        QString err = lastError.driverText();
+        qDebug() << "insert data error: " << err;
     }
     return bRet;
 }

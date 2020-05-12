@@ -46,7 +46,7 @@
        <item>
         <widget class="QLabel" name="lb_newMsgNum">
          <property name="text">
-          <string>n</string>
+          <string/>
          </property>
         </widget>
        </item>

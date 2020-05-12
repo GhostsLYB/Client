@@ -25,7 +25,9 @@ class ChatPage : public QWidget
     Q_OBJECT
 
 public:
-    explicit ChatPage(Control * parentCtrl = nullptr,QWidget *parent = nullptr);
+    explicit ChatPage(Control * parentCtrl = nullptr,
+                      SqliteControl *sqlite = nullptr,
+                      QWidget *parent = nullptr);
     ~ChatPage();
 
     void setFriendName(QString friendName){lb_friendName->setText(friendName);}
@@ -83,6 +85,7 @@ private slots:
 private:
     Ui::ChatPage *ui;
     Control      *ctrl = nullptr;
+    SqliteControl *sqlite;
     int msgType = 3;    //发送消息的类型，默认为3表示文字消息
     QString sendFilePath = "";
 };
