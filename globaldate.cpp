@@ -9,6 +9,27 @@ GlobalDate::GlobalDate(QObject *parent) : QObject(parent)
 
 }
 
+void GlobalDate::initCatalog(QString dirName)
+{
+    QDir *dir = new QDir;
+    QUrl url("file:///storage/emulated/0/"+dirName);
+    QString path = url.toLocalFile();  //获取到的路径
+    bool exist = dir->exists(path);
+    if(exist)
+    {
+        qDebug()<< dirName << " exist";
+    }
+    else{
+        qDebug() << "dir is not exist create " << dirName;
+        if(dir->mkdir(path))
+            qDebug() << "create successed " << dirName;
+        else {
+            qDebug() << "create fail " <<dirName;
+        }
+    }
+}
+
+
 void GlobalDate::insertUserImageUrl(QString userName, QString imageUrl)
 {
     userImageUrlMap.insert(userName,imageUrl);

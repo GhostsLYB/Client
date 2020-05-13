@@ -4,12 +4,15 @@
 #include <QObject>
 #include <QMap>
 #include <QList>
+#include <QDir>
+#include <QDebug>
 
 class GlobalDate : public QObject
 {
     Q_OBJECT
 public:
     explicit GlobalDate(QObject *parent = nullptr);
+    static void initCatalog(QString dirName);
     static QString currentUserName(){return userName;}
     static void setCurrentUserName(QString name){userName = name;}
     static void insertUserImageUrl(QString userName, QString imageUrl);
