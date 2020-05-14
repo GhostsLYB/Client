@@ -10,6 +10,7 @@
 #include <QMap>
 
 #include "socket/socketcontrol.h"
+#include "../globaldate.h"
 
 class Control : public QObject
 {

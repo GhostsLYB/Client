@@ -1,10 +1,9 @@
 #include "soundrecordbutton.h"
 #include "ui_soundrecordbutton.h"
 
-#define PI_osd die
-//QString wavAudioFilePath = QString("e:/always/audio/");
-
-QString wavAudioFilePath = QString("e:/always/IM/file/");
+QString wavAudioFilePath = "/storage/emulated/0/IM/file/";
+//"E:/always/IM/file/";
+//QString wavAudioFilePath = GlobalDate::getGlobalFilePath();
 
 SoundRecordButton::SoundRecordButton(QWidget *parent) :
     QToolButton(parent),
@@ -13,8 +12,16 @@ SoundRecordButton::SoundRecordButton(QWidget *parent) :
 {
     ui->setupUi(this);
     setText("按住 说话");
-    recorder->audioSettings().setBitRate(8000);
-    recorder->audioSettings().setSampleRate(8000);
+    QString str = recorder->defaultAudioInput();
+
+    recorder->audioSettings().setBitRate(128000);
+    recorder->audioSettings().setSampleRate(11025);
+
+    qDebug() << "default input Device :" << str;
+    int bitRate = recorder->audioSettings().bitRate();
+    qDebug() << "default bit rate :" << bitRate;
+    int sampleRate = recorder->audioSettings().sampleRate();
+    qDebug() << "default sample rate :" << sampleRate;
 }
 
 void SoundRecordButton::mousePressEvent(QMouseEvent *e)
@@ -22,9 +29,21 @@ void SoundRecordButton::mousePressEvent(QMouseEvent *e)
     Q_UNUSED(e);
     qDebug() << "start sound recording ";
     setText("松开 send");
-    savePath = wavAudioFilePath+getCurrentDataTime()+".wav";
+    savePath = wavAudioFilePath+getCurrentDataTime();
     qDebug() << "savePath = " << savePath;
-    recorder->setOutputLocation(QUrl::fromLocalFile(savePath));
+    if(recorder->setOutputLocation(QUrl::fromLocalFile(savePath)))
+        qDebug() << "set local file path success";
+    else {
+        qDebug() << "set local file Path fail";
+    }
+
+    QString str = recorder->defaultAudioInput();
+    qDebug() << "default input Device :" << str;
+    int bitRate = recorder->audioSettings().bitRate();
+    qDebug() << "default bit rate :" << bitRate;
+    int sampleRate = recorder->audioSettings().sampleRate();
+    qDebug() << "default sample rate :" << sampleRate;
+
     recorder->record();
 }
 
@@ -35,6 +54,13 @@ void SoundRecordButton::mouseReleaseEvent(QMouseEvent *e)
     setText("按住 说话");
     recorder->stop();
     qDebug() << "savePath = " << savePath;
+    QFile file(savePath+".mp4");
+    if(file.rename(savePath+".mp3"))
+        qDebug() << "rename success";
+    else {
+        qDebug() << "rename fail";
+    }
+    savePath = savePath + ".mp3";
     QSound::play(savePath);
     emit sigRecordFinish(savePath);
 }

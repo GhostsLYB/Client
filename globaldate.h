@@ -15,6 +15,9 @@ public:
     static void initCatalog(QString dirName);
     static QString currentUserName(){return userName;}
     static void setCurrentUserName(QString name){userName = name;}
+
+    static QString getGlobalFilePath(){return globalFilePath;}
+
     static void insertUserImageUrl(QString userName, QString imageUrl);
     static QString getImageUrl(QString userName);
     static void insertFriendNameImage(QString userName,QString imageUrl);
@@ -25,6 +28,8 @@ private:
     static QString userName;
     static QMap<QString,QString> friendNameImageMap;
     static QMap<QString,QString> userImageUrlMap;
+
+    static QString globalFilePath;
 signals:
 
 public slots:

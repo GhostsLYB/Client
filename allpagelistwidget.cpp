@@ -2,7 +2,9 @@
 #include "ui_allpagelistwidget.h"
 #include <QFile>
 
-QString allResourceFilePath = "E:/always/IM/file/";
+QString allResourceFilePath = "/storage/emulated/0/IM/file/";
+//"E:/always/IM/file/";
+//QString allResourceFilePath = GlobalDate::getGlobalFilePath();
 
 AllPageListWidget::AllPageListWidget(QWidget *parent) :
     QWidget(parent),

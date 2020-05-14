@@ -2,6 +2,8 @@
 #include "ui_widgetmain.h"
 #include <QDebug>
 
+#define RECENT_CHAT_ITEM_HEIGHT 120
+
 WidgetMain::WidgetMain(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::WidgetMain)
@@ -37,7 +39,7 @@ void WidgetMain::onAddFriendItem(QString image,QString msgNum,QString friendName
                                  QString lastMsg,QString lastTime,QString voice)
 {
     QListWidgetItem *item = new QListWidgetItem(listWidget);
-    item->setSizeHint(QSize(0,50));
+    item->setSizeHint(QSize(0,RECENT_CHAT_ITEM_HEIGHT));
     //设置好友头像，名称，最后时间，最后消息，是否免打扰
     CustomListWidgetItem * itemWidget = new CustomListWidgetItem(listWidget,image,msgNum,friendName,
                                                                  lastTime,lastMsg,voice);   //自定义QListWidgetItem

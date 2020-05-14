@@ -10,6 +10,8 @@
 #include <QSound>
 #include <QDebug>
 #include <QFileInfo>
+#include <QDir>
+#include <QMediaPlayer>
 
 namespace Ui {
 class TextChatInfoItem;

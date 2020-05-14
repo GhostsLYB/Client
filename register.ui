@@ -42,20 +42,12 @@
    </item>
    <item row="1" column="1">
     <layout class="QGridLayout" name="gridLayout">
-     <item row="8" column="0">
-      <widget class="QLabel" name="label_6">
-       <property name="text">
-        <string>身份证号</string>
-       </property>
-      </widget>
-     </item>
-     <item row="6" column="1">
-      <widget class="QLineEdit" name="le_phone">
-       <property name="text">
-        <string>18246514717</string>
-       </property>
-      </widget>
-     </item>
+     <property name="horizontalSpacing">
+      <number>10</number>
+     </property>
+     <property name="verticalSpacing">
+      <number>12</number>
+     </property>
      <item row="9" column="0">
       <widget class="QLabel" name="label_9">
        <property name="text">
@@ -63,73 +55,14 @@
        </property>
       </widget>
      </item>
-     <item row="6" column="0">
-      <widget class="QLabel" name="label_5">
-       <property name="text">
-        <string>手机号</string>
+     <item row="1" column="1">
+      <widget class="QLineEdit" name="le_pwd">
+       <property name="styleSheet">
+        <string notr="true">border-radius:10px;
+border:1px solid;</string>
        </property>
-      </widget>
-     </item>
-     <item row="4" column="0">
-      <widget class="QLabel" name="label_8">
        <property name="text">
-        <string>年  龄</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="0">
-      <widget class="QLabel" name="label_3">
-       <property name="text">
-        <string>确认密码</string>
-       </property>
-      </widget>
-     </item>
-     <item row="9" column="1">
-      <widget class="QLineEdit" name="le_secret">
-       <property name="text">
-        <string>1 + 2 = ?</string>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="1">
-      <widget class="QLineEdit" name="le_age">
-       <property name="text">
-        <string>20</string>
-       </property>
-      </widget>
-     </item>
-     <item row="10" column="1">
-      <widget class="QLineEdit" name="le_answer">
-       <property name="text">
-        <string>3</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="0">
-      <widget class="QLabel" name="label_2">
-       <property name="text">
-        <string>密  码</string>
-       </property>
-      </widget>
-     </item>
-     <item row="10" column="0">
-      <widget class="QLabel" name="label_10">
-       <property name="text">
-        <string>密保答案</string>
-       </property>
-      </widget>
-     </item>
-     <item row="8" column="1">
-      <widget class="QLineEdit" name="le_id">
-       <property name="text">
-        <string>230126000000001111</string>
-       </property>
-      </widget>
-     </item>
-     <item row="5" column="1">
-      <widget class="QLineEdit" name="le_email">
-       <property name="text">
-        <string>1036982019@qq.com</string>
+        <string>123456</string>
        </property>
       </widget>
      </item>
@@ -140,8 +73,19 @@
        </property>
       </widget>
      </item>
+     <item row="8" column="0">
+      <widget class="QLabel" name="label_6">
+       <property name="text">
+        <string>身份证号</string>
+       </property>
+      </widget>
+     </item>
      <item row="3" column="1">
       <widget class="QComboBox" name="cb_sex">
+       <property name="styleSheet">
+        <string notr="true">border-radius:10px;
+border:1px solid;</string>
+       </property>
        <property name="currentText">
         <string>男</string>
        </property>
@@ -160,8 +104,23 @@
        </item>
       </widget>
      </item>
+     <item row="6" column="1">
+      <widget class="QLineEdit" name="le_phone">
+       <property name="styleSheet">
+        <string notr="true">border-radius:10px;
+border:1px solid;</string>
+       </property>
+       <property name="text">
+        <string>18246514717</string>
+       </property>
+      </widget>
+     </item>
      <item row="2" column="1">
       <widget class="QLineEdit" name="le_checkPwd">
+       <property name="styleSheet">
+        <string notr="true">border-radius:10px;
+border:1px solid;</string>
+       </property>
        <property name="text">
         <string>123456</string>
        </property>
@@ -174,10 +133,39 @@
        </property>
       </widget>
      </item>
-     <item row="1" column="1">
-      <widget class="QLineEdit" name="le_pwd">
+     <item row="5" column="1">
+      <widget class="QLineEdit" name="le_email">
+       <property name="styleSheet">
+        <string notr="true">border-radius:10px;
+border:1px solid;</string>
+       </property>
        <property name="text">
-        <string>123456</string>
+        <string>1036982019@qq.com</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QLineEdit" name="le_username">
+       <property name="styleSheet">
+        <string notr="true">border-radius:10px;
+border:1px solid;</string>
+       </property>
+       <property name="text">
+        <string>ghost</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="label_3">
+       <property name="text">
+        <string>确认密码</string>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="0">
+      <widget class="QLabel" name="label_5">
+       <property name="text">
+        <string>手机号</string>
        </property>
       </widget>
      </item>
@@ -188,10 +176,68 @@
        </property>
       </widget>
      </item>
-     <item row="0" column="1">
-      <widget class="QLineEdit" name="le_username">
+     <item row="4" column="0">
+      <widget class="QLabel" name="label_8">
        <property name="text">
-        <string>ghost</string>
+        <string>年  龄</string>
+       </property>
+      </widget>
+     </item>
+     <item row="10" column="0">
+      <widget class="QLabel" name="label_10">
+       <property name="text">
+        <string>密保答案</string>
+       </property>
+      </widget>
+     </item>
+     <item row="9" column="1">
+      <widget class="QLineEdit" name="le_secret">
+       <property name="styleSheet">
+        <string notr="true">border-radius:10px;
+border:1px solid;</string>
+       </property>
+       <property name="text">
+        <string>1 + 2 = ?</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="1">
+      <widget class="QLineEdit" name="le_age">
+       <property name="styleSheet">
+        <string notr="true">border-radius:10px;
+border:1px solid;</string>
+       </property>
+       <property name="text">
+        <string>20</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="label_2">
+       <property name="text">
+        <string>密  码</string>
+       </property>
+      </widget>
+     </item>
+     <item row="10" column="1">
+      <widget class="QLineEdit" name="le_answer">
+       <property name="styleSheet">
+        <string notr="true">border-radius:10px;
+border:1px solid;</string>
+       </property>
+       <property name="text">
+        <string>3</string>
+       </property>
+      </widget>
+     </item>
+     <item row="8" column="1">
+      <widget class="QLineEdit" name="le_id">
+       <property name="styleSheet">
+        <string notr="true">border-radius:10px;
+border:1px solid;</string>
+       </property>
+       <property name="text">
+        <string>230126000000001111</string>
        </property>
       </widget>
      </item>
@@ -216,11 +262,19 @@
       <enum>Qt::Horizontal</enum>
      </property>
      <widget class="QPushButton" name="btn_cancel">
+      <property name="styleSheet">
+       <string notr="true">border-radius:10px;
+border:2px solid;</string>
+      </property>
       <property name="text">
        <string>返  回</string>
       </property>
      </widget>
      <widget class="QPushButton" name="btn_register">
+      <property name="styleSheet">
+       <string notr="true">border-radius:10px;
+border:2px solid;</string>
+      </property>
       <property name="text">
        <string>注  册</string>
       </property>

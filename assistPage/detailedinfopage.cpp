@@ -1,6 +1,8 @@
 #include "detailedinfopage.h"
 #include "ui_detailedinfopage.h"
 
+QString openFilePath = "/storage/emulated/0/IM/file/";
+
 DetailedInfoPage::DetailedInfoPage(Control *ctrl, SqliteControl *sqlite, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::DetailedInfoPage),
@@ -122,7 +124,7 @@ void DetailedInfoPage::onToModifyPage(QString btnNameText)
     if(btnNameText == "头像"){
         QString imagePath = QFileDialog::getOpenFileName(this,
                                                          "choice image",
-                                                         "",
+                                                         openFilePath,
                                                          "*.png;;*.PNG;;*.jpg");
         if(imagePath == "")
             return;

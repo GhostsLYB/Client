@@ -8,6 +8,7 @@
 #include <QSound>
 #include <QUrl>
 #include <QDateTime>
+#include "../globaldate.h"
 
 namespace Ui {
 class SoundRecordButton;

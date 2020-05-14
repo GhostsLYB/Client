@@ -1,6 +1,8 @@
 #include "widgetfriend.h"
 #include "ui_widgetfriend.h"
 
+#define FRIEND_ITEM_HEIGHT 120
+
 WidgetFriend::WidgetFriend(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::WidgetFriend)
@@ -28,10 +30,10 @@ void WidgetFriend::initFriendList(QMap<QString,QString> &map)
     int i = 0;
     for (;iter != map.end(); iter++) {
         QListWidgetItem * item = new QListWidgetItem(listWidget);
-        item->setSizeHint(QSize(0,50));
+        item->setSizeHint(QSize(0,FRIEND_ITEM_HEIGHT));
         FriendListItem * itemWidget = new FriendListItem(listWidget);   //自定义QListWidgetItem
         itemWidget->setIndex(++i);
-        //设置头像图片，名称（需要完善）
+        //设置头像图片，名称
         itemWidget->setFriendName(iter.key());
         itemWidget->setPicture(iter.value());
         listWidget->setItemWidget(item,itemWidget); //为listWidget添加自定义item

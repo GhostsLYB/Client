@@ -117,7 +117,7 @@
       <enum>QTabWidget::South</enum>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>2</number>
      </property>
      <widget class="QWidget" name="tab_allInfo">
       <attribute name="title">
@@ -224,7 +224,7 @@ color: rgb(209, 209, 209);</string>
        <item>
         <widget class="QLabel" name="label_4">
          <property name="text">
-          <string>设置界面</string>
+          <string>还没有设置选项</string>
          </property>
         </widget>
        </item>

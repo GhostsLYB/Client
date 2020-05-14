@@ -7,7 +7,9 @@
 //分段号->改分段的数据
 QMap<QString, QMap<int, QByteArray> > filebuf;
 
-QString controlResouceFilePath = "E:/always/IM/file/";
+//QString controlResouceFilePath = "E:/always/IM/file/";
+QString controlResouceFilePath = "/storage/emulated/0/IM/file/";
+//GlobalDate::getGlobalFilePath();
 
 
 Control::Control(QObject *parent) :
@@ -101,10 +103,14 @@ void Control::recvFile(QTcpSocket **sock){
     if(isFirstRecvFile){    //第一次接收文件信息数据
         QByteArray msg = (*sock)->readAll();
         qDebug() << "first recv file info : " << msg;
-        int fileNameSize = msg.left(4).toInt();
+        if(msg == "__NOT_EXIST__" || msg == "__EMPTY__"){//文件不存在或为空
+            emit sigOneFileRecvFinish(currentRecvFilePath);
+            return;
+        }
+        int fileNameSize = msg.left(4).toInt(); //文件名长
         msg.remove(0, 4);
-        msg.remove(0, fileNameSize);
-        recvFileSize = msg.toLong();
+        msg.remove(0, fileNameSize);    //文件名
+        recvFileSize = msg.toLong();    //文件大小
         isFirstRecvFile = false;
     }
     else {                  //接收文件数据并存入本地文件

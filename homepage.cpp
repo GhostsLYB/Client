@@ -1,7 +1,9 @@
 #include "homepage.h"
 #include "ui_homepage.h"
 
-QString homePageResouceFilePath = "E:/always/IM/file/";
+QString homePageResouceFilePath = "/storage/emulated/0/IM/file/";
+//"E:/always/IM/file/";
+//QString homePageResouceFilePath = GlobalDate::getGlobalFilePath();
 
 HomePage::HomePage(Control * parentTrol, QWidget *parent) :
     QWidget(parent),
@@ -156,7 +158,7 @@ void HomePage::on_btn_exit_clicked()
 
 void HomePage::on_btn_sendFile_clicked()
 {
-    filePath = QFileDialog::getOpenFileName(this,"open file","","*");
+    filePath = QFileDialog::getOpenFileName(this,"open file",homePageResouceFilePath,"*");
 //    QString fileName = filePath.mid(filePath.lastIndexOf('/') + 1);
     if(filePath == "")
         return;

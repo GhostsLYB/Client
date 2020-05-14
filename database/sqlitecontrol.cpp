@@ -1,7 +1,10 @@
 #include "sqlitecontrol.h"
 #include "sqlitecontrol.h"
 
-QString resourceFilePath = "E:/always/IM/file/";
+//QString resourceFilePath = "E:/always/IM/file/";"
+QString resourceFilePath = "/storage/emulated/0/IM/file/";
+QString sqliteDataFilePath = "/storage/emulated/0/IM/data/";
+//QString resourceFilePath = GlobalDate::getGlobalFilePath();
 
 SqliteControl::SqliteControl(QObject * parent)
     :QObject (parent)
@@ -18,7 +21,7 @@ void SqliteControl::setDatabase(QString databaseName)
     else {
         qDebug() << "connecting database "<<databaseName;
         m_DataBase = QSqlDatabase::addDatabase("QSQLITE");
-        m_DataBase.setDatabaseName(QCoreApplication::applicationDirPath()+"/"+ databaseName+".db");//windows
+        m_DataBase.setDatabaseName(sqliteDataFilePath+ databaseName+".db");//windows
         //            m_DataBase.setDatabaseName("/storage/emulated/0/0_temp/"+databaseName+".db");//雷电 手机
         //            m_DataBase.setDatabaseName("/document/"+databaseName+".db");
     }
@@ -239,14 +242,22 @@ bool SqliteControl::insertData(QString tableName, const MyFriend *mData, const C
     QString insertString;
     if(tableName.contains(QString("chatInfo")))
     {
+        QString url = cData->url;
+        QString word = cData->word;
+        qDebug() << word;
+        if(cData->flag != 3)
+        {
+            url = resourceFilePath + url.mid(url.lastIndexOf('/')+1);
+            word = "";
+        }
         insertString = QString("INSERT INTO %1 (id,peerName,flag,direction,word,url,time) "
                                "VALUES (null, '%2', %3, '%4', '%5', '%6', '%7')")
                                .arg(tableName)
                                .arg(cData->peerName)
                                .arg(cData->flag)
                                .arg(cData->direction)
-                               .arg(cData->word)
-                               .arg(cData->url)
+                               .arg(word)
+                               .arg(url)
                                .arg(cData->time);
     }
     else if (tableName == QString("my_friend")) {
@@ -273,7 +284,7 @@ bool SqliteControl::insertData(QString tableName, const MyFriend *mData, const C
                 insertString = QString("update recent_chatList set "
                                        "lastMessage = '%1',lastTime = '%2' "
                                        "where userName = '%3' and friendName = '%4'")
-                        .arg((cData->flag == 3)?cData->word:cData->url)
+                        .arg((cData->flag == 3)?cData->word:"message")
                         .arg(QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss"))
                         .arg(GlobalDate::currentUserName())
                         .arg(cData->peerName);
@@ -286,7 +297,7 @@ bool SqliteControl::insertData(QString tableName, const MyFriend *mData, const C
                                        "values(null,'%1','%2','%3','%4','0')")
                         .arg(GlobalDate::currentUserName())
                         .arg(cData->peerName)
-                        .arg((cData->flag == 3)?cData->word:cData->url)
+                        .arg((cData->flag == 3)?cData->word:"message")
                         .arg(QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss"));
                 qDebug() << insertString;
                 success = query.exec(insertString);
@@ -583,6 +594,7 @@ void SqliteControl::importSyncData(QString loginUserName)
                         j += 2;
                     }
                     if(info.count() == 7){//有七个字段时
+                        info[5] = resourceFilePath + info[5].mid(info[5].lastIndexOf('/')+1);
                         sql = QString("insert into %1 values(%2,'%3',%4,'%5','%6','%7','%8')")
                                 .arg(tableNameList[i])
                                 .arg(info[0].toInt()).arg(info[1]).arg(info[2].toInt())

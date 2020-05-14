@@ -2,6 +2,10 @@
 #include "ui_chatpage.h"
 #include <QCursor>
 
+#define CHAT_ITEM_HEIGHT 100
+
+QString chatPagePath = "/storage/emulated/0/IM/file/";
+
 ChatPage::ChatPage(Control * parentCtrl, SqliteControl *sqlite, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::ChatPage),
@@ -138,7 +142,7 @@ void ChatPage::onRecvMessage(QString msg, int flag)
     QString url = "";
     if(flag == 3)
         wordMsg = bta;
-    else if (flag == 7) {
+    else{
         url = bta;
     }
     ChatInfo chatInfo = {peerName,flag,"recv",wordMsg,url,
@@ -160,7 +164,7 @@ void ChatPage::onRecordFinish(QString audioPath)
     //保存音频文件路径到sendFilePath,用于发送文件到服务器
     sendFilePath = audioPath;
     qDebug() << "audio send";
-    //发送音频文件到服务器n
+    //发送音频文件到服务器
     ctrl->createSockAndSend(audioPath);
     //发送转发音频的消息到服务器并添加到listWdiget并存入数据库
     onSend();
@@ -181,7 +185,7 @@ void ChatPage::addToListWidget(const QString &name,const int &flag,const QString
         mImagePath = GlobalDate::getImageUrl(userName);
     QListWidgetItem *item = new QListWidgetItem(listWidget);
     item->setFlags(Qt::ItemIsEnabled);
-    item->setSizeHint(QSize(0,50));
+    item->setSizeHint(QSize(0,CHAT_ITEM_HEIGHT));
     TextChatInfoItem * itemWidget = nullptr;
     QString msg = wordOfUrl;
     if(flag == 3)
@@ -193,8 +197,9 @@ void ChatPage::addToListWidget(const QString &name,const int &flag,const QString
         msg = QString("<img src=\":icon/app_icon/voiceInput.png\" />");
     }
     else if (flag == 8) {
-        msg = QString("<img src=\"%1\" height=\"150\" width=\"100\"/>").arg(wordOfUrl);
-        item->setSizeHint(QSize(0,150));
+        msg = QString("<img src=\"%1\" height=\"290\" width=\"190\" "
+                      " margin-left=\"5\" margin-left=\"5\"/>").arg(wordOfUrl);
+        item->setSizeHint(QSize(0,300));
     }
     else if (flag == 9){
         msg = wordOfUrl.mid(wordOfUrl.lastIndexOf('/')+1);
@@ -222,8 +227,10 @@ void ChatPage::initInfo(QList<ChatInfo> *list)
     QString wordOrUrl = "";
     for(QList<ChatInfo>::iterator iter = list->begin();iter != list->end(); iter++)
     {
-        if(iter->flag == 7 || iter->flag == 8 || iter->flag == 9)
+        if(iter->flag == 7 || iter->flag == 8 || iter->flag == 9){
             wordOrUrl = iter->url;
+            qDebug() << iter->flag << ":" << wordOrUrl;
+        }
         else {
             wordOrUrl = iter->word;
         }
@@ -323,7 +330,7 @@ void ChatPage::on_btn_p3_clicked()
 void ChatPage::on_btn_sendPicture_clicked()
 {
     qDebug() << "btn send picture is clicked";
-    sendFilePath = QFileDialog::getOpenFileName(this,"选择图片","","*.jpg;;*.png");
+    sendFilePath = QFileDialog::getOpenFileName(this,"选择图片",chatPagePath,"*.jpg;;*.png");
     if(sendFilePath.isEmpty())
         return;
 //    发送图片
@@ -334,7 +341,7 @@ void ChatPage::on_btn_sendPicture_clicked()
 void ChatPage::on_btn_sendFile_clicked()
 {
     qDebug() << "btn send file is clicked";
-    sendFilePath = QFileDialog::getOpenFileName(this,"选择文件","","*");
+    sendFilePath = QFileDialog::getOpenFileName(this,"选择文件",chatPagePath,"*");
     if(sendFilePath.isEmpty())
         return;
 //    发送文件
