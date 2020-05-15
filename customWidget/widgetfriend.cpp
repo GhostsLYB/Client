@@ -1,7 +1,7 @@
 #include "widgetfriend.h"
 #include "ui_widgetfriend.h"
 
-#define FRIEND_ITEM_HEIGHT 120
+#define FRIEND_ITEM_HEIGHT 100
 
 WidgetFriend::WidgetFriend(QWidget *parent) :
     QWidget(parent),
@@ -11,6 +11,7 @@ WidgetFriend::WidgetFriend(QWidget *parent) :
 
     listWidget = new QListWidget(this);
     this->layout()->addWidget(listWidget);
+
 
     listWidget->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     listWidget->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);

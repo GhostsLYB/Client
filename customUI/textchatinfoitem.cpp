@@ -13,6 +13,7 @@ TextChatInfoItem::TextChatInfoItem(QWidget *parent,QString imagePath,
 
     imageLayout = new QVBoxLayout(this);
     lb_image = ui->lb_image;
+    lb_image->setFixedSize(QSize(48,48));
     lb_image->setAttribute(Qt::WA_TransparentForMouseEvents, true);
     imageLayout->addWidget(lb_image);
     imageLayout->setMargin(0);
@@ -23,6 +24,9 @@ TextChatInfoItem::TextChatInfoItem(QWidget *parent,QString imagePath,
     te_info->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     te_info->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     te_info->setAttribute(Qt::WA_TransparentForMouseEvents, true);
+    //自适应高度
+    connect(te_info->document(),&QTextDocument::contentsChanged,
+            this,&TextChatInfoItem::onContentsChanged);
     infoLayout->addWidget(te_info);
     infoLayout->setMargin(8);
     QSpacerItem *spacerItem = new QSpacerItem(20,20,QSizePolicy::Expanding,QSizePolicy::Minimum);
@@ -33,12 +37,12 @@ TextChatInfoItem::TextChatInfoItem(QWidget *parent,QString imagePath,
         pix.load(":/icon/head_picture/2.png");
     lb_image->setPixmap(pix);   //设置头像
     te_info->append(info);      //设置信息
-    te_info->setFixedSize(QSize(200,130));
+//    te_info->setFixedSize(QSize(200,130));
     if(flag == 8){ //图片
-        te_info->setFixedSize(QSize(200,300));
+//        te_info->setFixedSize(QSize(200,300));
     }
     if(flag == 9){ //文件
-        te_info->setFixedSize(QSize(200,130));
+//        te_info->setFixedSize(QSize(200,130));
     }
     if(isSend){ //发送信息       //设置布局
         layout->addSpacerItem(spacerItem);
@@ -55,6 +59,31 @@ TextChatInfoItem::TextChatInfoItem(QWidget *parent,QString imagePath,
     layout->setSpacing(0);
 
 
+}
+
+int TextChatInfoItem::getHeight()
+{
+    return te_info->document()->size().height();
+}
+
+void TextChatInfoItem::onContentsChanged()
+{
+    QTextDocument *document=qobject_cast<QTextDocument*>(sender());
+    document->adjustSize();
+    if(document){
+        QTextEdit *editor=qobject_cast<QTextEdit*>(document->parent()->parent());
+        if (editor){
+            int newHeight = document->size().rheight() + 6;
+            if (newHeight != editor->height()){
+                editor->setFixedHeight(newHeight);
+            }
+            int newWidth = document->size().rwidth() + 6;
+            if (newWidth != editor->width()){
+                qDebug() << "height:" << newHeight << " width:" << newWidth;
+                editor->setFixedWidth(300);
+            }
+        }
+    }
 }
 
 void TextChatInfoItem::mouseReleaseEvent(QMouseEvent *)

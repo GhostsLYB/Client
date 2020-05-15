@@ -70,7 +70,7 @@
            <enum>QTabWidget::Rounded</enum>
           </property>
           <property name="currentIndex">
-           <number>2</number>
+           <number>3</number>
           </property>
           <property name="usesScrollButtons">
            <bool>true</bool>
@@ -197,7 +197,7 @@
             </property>
             <item>
              <widget class="QWidget" name="wid_mine" native="true">
-              <layout class="QVBoxLayout" name="verticalLayout_2" stretch="10,1">
+              <layout class="QVBoxLayout" name="verticalLayout_2" stretch="10">
                <property name="spacing">
                 <number>0</number>
                </property>
@@ -215,47 +215,6 @@
                </property>
                <item>
                 <widget class="QWidget" name="wid_mine_2" native="true"/>
-               </item>
-               <item>
-                <layout class="QHBoxLayout" name="horizontalLayout">
-                 <property name="spacing">
-                  <number>0</number>
-                 </property>
-                 <item>
-                  <widget class="QLineEdit" name="le_fileName">
-                   <property name="minimumSize">
-                    <size>
-                     <width>70</width>
-                     <height>0</height>
-                    </size>
-                   </property>
-                   <property name="text">
-                    <string>我的信息</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="btn_exit">
-                   <property name="text">
-                    <string>切换账号</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="btn_sendFile">
-                   <property name="text">
-                    <string>发送文件</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="btn_recvFile">
-                   <property name="text">
-                    <string>接收文件</string>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
                </item>
               </layout>
              </widget>

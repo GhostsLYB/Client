@@ -41,6 +41,7 @@ signals:
     void sigShowAllInfo(QString, int targetPage);
     void sigSearchShow();
     void syncFileDownloadFinish();
+    void sigImageDownloadFinish();
 
 public slots:
     void onChatItemClicked(QString);
@@ -48,11 +49,10 @@ public slots:
     void onSetMineInfo();
     void onDownloadFile(QString filePath);
     void onInitFriendList(QMap<QString,QString> &map);
+    void onDownloadFriendImages();
 
 private slots:
-    void on_btn_exit_clicked();
-    void on_btn_sendFile_clicked();
-    void on_btn_recvFile_clicked();
+    void onBtnExitClicked();
 
 private:
     Ui::HomePage    *ui;

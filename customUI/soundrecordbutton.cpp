@@ -61,7 +61,13 @@ void SoundRecordButton::mouseReleaseEvent(QMouseEvent *e)
         qDebug() << "rename fail";
     }
     savePath = savePath + ".mp3";
-    QSound::play(savePath);
+    file.setFileName(savePath);
+    if(file.size() < 5*1024){  //音频文件太小不发送并删除文件
+        qDebug() << "record sound too short";
+        file.remove();
+        return;
+    }
+//    QSound::play(savePath);
     emit sigRecordFinish(savePath);
 }
 

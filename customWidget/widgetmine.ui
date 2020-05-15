@@ -87,7 +87,7 @@
         <item>
          <widget class="QLabel" name="lb_userName">
           <property name="styleSheet">
-           <string notr="true">font: 75 12pt &quot;微软雅黑&quot;;</string>
+           <string notr="true">font: 75 26pt &quot;微软雅黑&quot;;</string>
           </property>
           <property name="text">
            <string>用户名</string>
@@ -138,7 +138,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QToolButton" name="btn_modifyInfo">
+      <widget class="QToolButton" name="btn_setup">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
          <horstretch>0</horstretch>
@@ -146,7 +146,7 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string>修改信息</string>
+        <string>设置</string>
        </property>
       </widget>
      </item>
@@ -168,7 +168,7 @@
    <item>
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
-      <widget class="QToolButton" name="btn_setup">
+      <widget class="QToolButton" name="btn_modifyInfo">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
          <horstretch>0</horstretch>
@@ -176,7 +176,7 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string>设置</string>
+        <string>退出登陆</string>
        </property>
       </widget>
      </item>

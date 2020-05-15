@@ -10,9 +10,10 @@ WidgetMine::WidgetMine(QWidget *parent) :
     lb_userName     = ui->lb_userName;
     lb_number       = ui->lb_number;
     btn_info        = ui->btn_info;
-    btn_modifyInfo  = ui->btn_modifyInfo;
+    btn_exitLogin  = ui->btn_modifyInfo;
     btn_setup       = ui->btn_setup;
     preNumber       = ui->lb_number->text();
+    connect(btn_exitLogin,&QToolButton::clicked,this,&WidgetMine::onBtnExitLoginClicked);
 }
 
 void WidgetMine::setUserInfo(QList<QString> &data)
@@ -52,4 +53,9 @@ void WidgetMine::on_btn_info_clicked()
 void WidgetMine::on_btn_setup_clicked()
 {
     emit sigShowAllInfo(ui->lb_userName->text(), 2);
+}
+
+void WidgetMine::onBtnExitLoginClicked()
+{
+    emit sigExitLogin();
 }

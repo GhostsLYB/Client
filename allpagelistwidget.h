@@ -45,8 +45,10 @@ public slots:
     void onRecvAddFriendResponse(QString msg);
 private slots:
     void on_btn_searchBack_clicked();
-
     void on_btn_search_clicked();
+    void onRefreshRecentPage();
+    void onRefreshFriendPage();
+    void onRefreshChatPage();
 
 private:
     Ui::AllPageListWidget   *ui;

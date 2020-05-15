@@ -29,6 +29,7 @@ SOURCES += \
         assistPage/detailedinfopage.cpp \
         chatpage.cpp \
         customUI/customlistwidgetitem.cpp \
+        customUI/customtextedit.cpp \
         customUI/friendlistitem.cpp \
         customUI/homepagemenu.cpp \
         customUI/homepagetop.cpp \
@@ -53,6 +54,7 @@ HEADERS += \
         assistPage/detailedinfopage.h \
         chatpage.h \
         customUI/customlistwidgetitem.h \
+        customUI/customtextedit.h \
         customUI/friendlistitem.h \
         customUI/homepagemenu.h \
         customUI/homepagetop.h \

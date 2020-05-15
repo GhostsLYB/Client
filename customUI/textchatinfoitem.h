@@ -12,6 +12,7 @@
 #include <QFileInfo>
 #include <QDir>
 #include <QMediaPlayer>
+#include <QTextDocument>
 
 namespace Ui {
 class TextChatInfoItem;
@@ -26,7 +27,7 @@ public:
                               QString info = "",bool isSend = true,int flag = 3);
     void setFilePath(QString path){filePath = path;}
     QString getFilePath(){return filePath;}
-
+    int getHeight();
     ~TextChatInfoItem();
 
 signals:
@@ -34,6 +35,9 @@ signals:
 
 protected:
     void mouseReleaseEvent(QMouseEvent*);
+
+private slots:
+    void onContentsChanged();
 
 private:
     Ui::TextChatInfoItem *ui;

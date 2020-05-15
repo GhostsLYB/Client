@@ -34,6 +34,10 @@ HomePage::HomePage(Control * parentTrol, QWidget *parent) :
             //同步文件下载完成
             emit syncFileDownloadFinish();
         }
+        if(filePath.right(4) == ".png" || filePath.right(4) == ".jpg"){
+            //图片下载完成
+            emit sigImageDownloadFinish();
+        }
         if(recvFilePathQueue.count() > 0){//还有文件需要下载
             //发送下一个文件
             QString fileName = recvFilePathQueue.dequeue();
@@ -71,6 +75,7 @@ HomePage::HomePage(Control * parentTrol, QWidget *parent) :
     connect(wid_mine,&WidgetMine::sigShowAllInfo,[&](QString userName, int targetPage){
         emit sigShowAllInfo(userName, targetPage);//目标页为0（详细信息界面）
     });
+    connect(wid_mine,&WidgetMine::sigExitLogin,this,&HomePage::onBtnExitClicked);
     //主页的四个页面的切换
     connect(ui->wid_homePage,&HomePageMenu::btn_pageClicked,[&](int index){
         ui->tabWidget->setCurrentIndex(index);
@@ -149,52 +154,15 @@ void HomePage::cleanRecentChatItems()
     wid_main->onCleanAllItems();
 }
 
-void HomePage::on_btn_exit_clicked()
+void HomePage::onBtnExitClicked()
 {
     QString exit = "  12   0   4exit";
     ctrl->sock->send(exit);
     emit sigExit();
 }
 
-void HomePage::on_btn_sendFile_clicked()
-{
-    filePath = QFileDialog::getOpenFileName(this,"open file",homePageResouceFilePath,"*");
-//    QString fileName = filePath.mid(filePath.lastIndexOf('/') + 1);
-    if(filePath == "")
-        return;
-    qDebug() << "file path : " << filePath;
-//    qDebug() << "file name : " << fileName;
-//    QTcpSocket * fileSocket = ctrl->createSocket();
-    static QTcpSocket * fileSocket;
-    fileSocket = nullptr;
-    fileSocket = new QTcpSocket();
-    connect(fileSocket, &QTcpSocket::connected, this,[&](){
-        ctrl->sendFile(&fileSocket, filePath);
-    });
-    fileSocket->connectToHost("39.105.105.251", 5188);
-}
-
-void HomePage::on_btn_recvFile_clicked()
-{
-//    onDownloadFile(ui->le_fileName->text());
-    if(recvSendFileSocket != nullptr){
-        delete recvSendFileSocket;
-        recvSendFileSocket = nullptr;
-    }
-    recvSendFileSocket = new QTcpSocket();
-    connect(recvSendFileSocket, &QTcpSocket::connected,[&](){
-        ctrl->sendFileRequest(&recvSendFileSocket, ui->le_fileName->text());
-    });
-    connect(recvSendFileSocket, &QTcpSocket::readyRead, [&](){
-        ctrl->recvFile(&recvSendFileSocket);
-    });
-    recvSendFileSocket->connectToHost("39.105.105.251", 5188);
-}
-
 void HomePage::onDownloadFile(QString filePath)
 {
-
-//    qDebug() << filePath;
     recvFilePathQueue.enqueue(filePath);
     static QString fileName;
     fileName = QString(filePath).mid(filePath.lastIndexOf('/')+1);
@@ -209,4 +177,12 @@ void HomePage::onDownloadFile(QString filePath)
 void HomePage::onInitFriendList(QMap<QString,QString> &map)
 {
     wid_friend->initFriendList(map);
+}
+
+void HomePage::onDownloadFriendImages()
+{
+    QMap<QString,QString>::iterator iter = GlobalDate::getFriendNameImageMap().begin();
+    for (; iter != GlobalDate::getFriendNameImageMap().end(); iter++) {
+        onDownloadFile(iter.value());
+    }
 }

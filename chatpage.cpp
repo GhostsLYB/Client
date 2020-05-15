@@ -16,7 +16,7 @@ ChatPage::ChatPage(Control * parentCtrl, SqliteControl *sqlite, QWidget *parent)
     connect(ctrl,&Control::sigRecvMessage,this,&ChatPage::onRecvMessage);
     btn_back = ui->btn_back;
     lb_friendName = ui->lb_friendName;
-    btn_info = ui->btn_info;
+//    btn_info = ui->btn_info;
     listWidget = ui->listWidget;
     listWidget->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     listWidget->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -185,7 +185,7 @@ void ChatPage::addToListWidget(const QString &name,const int &flag,const QString
         mImagePath = GlobalDate::getImageUrl(userName);
     QListWidgetItem *item = new QListWidgetItem(listWidget);
     item->setFlags(Qt::ItemIsEnabled);
-    item->setSizeHint(QSize(0,CHAT_ITEM_HEIGHT));
+//    item->setSizeHint(QSize(0,CHAT_ITEM_HEIGHT));
     TextChatInfoItem * itemWidget = nullptr;
     QString msg = wordOfUrl;
     if(flag == 3)
@@ -199,7 +199,7 @@ void ChatPage::addToListWidget(const QString &name,const int &flag,const QString
     else if (flag == 8) {
         msg = QString("<img src=\"%1\" height=\"290\" width=\"190\" "
                       " margin-left=\"5\" margin-left=\"5\"/>").arg(wordOfUrl);
-        item->setSizeHint(QSize(0,300));
+//        item->setSizeHint(QSize(0,300));
     }
     else if (flag == 9){
         msg = wordOfUrl.mid(wordOfUrl.lastIndexOf('/')+1);
@@ -207,8 +207,8 @@ void ChatPage::addToListWidget(const QString &name,const int &flag,const QString
     else {
         return;
     }
-
     itemWidget = new TextChatInfoItem(listWidget,mImagePath,msg,isSend,flag);
+    item->setSizeHint(QSize(0,itemWidget->getHeight()+14));
     if(flag == 7 || flag == 8 || flag == 9)
     {
         itemWidget->setFilePath(wordOfUrl);
@@ -233,6 +233,7 @@ void ChatPage::initInfo(QList<ChatInfo> *list)
         }
         else {
             wordOrUrl = iter->word;
+            qDebug() << iter->flag << ":" << wordOrUrl;
         }
 
         addToListWidget(iter->peerName,iter->flag,iter->direction,wordOrUrl,"",iter->time);

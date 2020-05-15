@@ -54,7 +54,7 @@ private:
 public:
     QToolButton * btn_back;
     QLabel      * lb_friendName;
-    QToolButton * btn_info;
+//    QToolButton * btn_info;
     QListWidget * listWidget;
     QTextEdit   * te_sendBox;
     QPushButton * btn_send;

@@ -595,10 +595,12 @@ void SqliteControl::importSyncData(QString loginUserName)
                     }
                     if(info.count() == 7){//有七个字段时
                         info[5] = resourceFilePath + info[5].mid(info[5].lastIndexOf('/')+1);
+                        QString word = info[4].replace("\\\n","");//转换文字信息
+                        qDebug() << "word = [" << word << "]";
                         sql = QString("insert into %1 values(%2,'%3',%4,'%5','%6','%7','%8')")
                                 .arg(tableNameList[i])
                                 .arg(info[0].toInt()).arg(info[1]).arg(info[2].toInt())
-                                .arg(info[3]).arg(info[4]).arg(info[5]).arg(info[6]);
+                                .arg(info[3]).arg(word).arg(info[5]).arg(info[6]);
 //                        qDebug() << sql;
                         query.exec(sql);
                     }

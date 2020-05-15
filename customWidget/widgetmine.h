@@ -22,10 +22,14 @@ public:
 
 signals:
     void sigShowAllInfo(QString userName, int targetPage);
+    void sigExitLogin();
+
 private slots:
     void on_btn_info_clicked();
 
     void on_btn_setup_clicked();
+
+    void onBtnExitLoginClicked();
 
 private:
     Ui::WidgetMine  *ui;
@@ -33,7 +37,7 @@ private:
     QLabel          *lb_userName;
     QLabel          *lb_number;
     QToolButton     *btn_info;
-    QToolButton     *btn_modifyInfo;
+    QToolButton     *btn_exitLogin;
     QToolButton     *btn_setup;
     QString         preNumber;
 };
