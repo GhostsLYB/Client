@@ -28,7 +28,7 @@ void SoundRecordButton::mousePressEvent(QMouseEvent *e)
 {
     Q_UNUSED(e);
     qDebug() << "start sound recording ";
-    setText("松开 send");
+    setText("松开 发送");
     savePath = wavAudioFilePath+getCurrentDataTime();
     qDebug() << "savePath = " << savePath;
     if(recorder->setOutputLocation(QUrl::fromLocalFile(savePath)))
@@ -62,12 +62,11 @@ void SoundRecordButton::mouseReleaseEvent(QMouseEvent *e)
     }
     savePath = savePath + ".mp3";
     file.setFileName(savePath);
-    if(file.size() < 5*1024){  //音频文件太小不发送并删除文件
+    if(file.size() < 3*1024){  //音频文件太小不发送并删除文件
         qDebug() << "record sound too short";
         file.remove();
         return;
     }
-//    QSound::play(savePath);
     emit sigRecordFinish(savePath);
 }
 

@@ -15,6 +15,8 @@ public:
     static void initCatalog(QString dirName);
     static QString currentUserName(){return userName;}
     static void setCurrentUserName(QString name){userName = name;}
+    static void setIsMute(bool mute){isMute = mute;}
+    static bool getIsMutex(){return isMute;}
 
     static QString getGlobalFilePath(){return globalFilePath;}
 
@@ -24,12 +26,15 @@ public:
     static QString getFriendImage(QString friendName);
     static void cleanFriendImageMap(){friendNameImageMap.clear();}
     static QMap<QString,QString> & getFriendNameImageMap(){return friendNameImageMap;}
+
 private:
     static QString userName;
     static QMap<QString,QString> friendNameImageMap;
     static QMap<QString,QString> userImageUrlMap;
 
     static QString globalFilePath;
+
+    static bool isMute;
 signals:
 
 public slots:

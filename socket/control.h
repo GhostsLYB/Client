@@ -8,6 +8,7 @@
 #include <QFileInfo>
 #include <QThread>
 #include <QMap>
+#include <QMediaPlayer>
 
 #include "socket/socketcontrol.h"
 #include "../globaldate.h"

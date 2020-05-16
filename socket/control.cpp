@@ -295,4 +295,3 @@ void Control::saveFileSection(QByteArray &bta)
         emit SocketControl::socket()->readyRead();
     }
 }
-

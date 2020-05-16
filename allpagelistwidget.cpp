@@ -44,7 +44,7 @@ AllPageListWidget::AllPageListWidget(QWidget *parent) :
     connect(homepage,&HomePage::sigSearchShow,[&](){
         ui->tabWidget->setCurrentIndex(6);
         le_input->clear();
-        lb_waringInfo->setText("input user name for search!");
+        lb_waringInfo->setText("输入用户名搜索！");
     });
     connect(homepage,&HomePage::syncFileDownloadFinish,[&](){
         sqlite->importSyncData(GlobalDate::currentUserName());
@@ -176,6 +176,10 @@ void AllPageListWidget::onLoginSuccessed(QString userName)
     homepage->onDownloadFile(allResourceFilePath+userName+"_user_friendList.txt");
     homepage->onDownloadFile(allResourceFilePath+"user_info.txt");
     homepage->onDownloadFile(allResourceFilePath+"users.txt");
+    //如果不存在通知音效文件则下载
+    QFile file(allResourceFilePath+"msgAudio.mp3");
+    if(!file.exists())
+        homepage->onDownloadFile(allResourceFilePath+"msgAudio.mp3");
 }
 
 //获取数据库中表格的数据

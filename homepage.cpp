@@ -84,9 +84,9 @@ HomePage::HomePage(Control * parentTrol, QWidget *parent) :
         if(index == 0)
             ui->wid_homePageTop->setWord("趣聊");
         else if (index == 1)
-            ui->wid_homePageTop->setWord("Friend");
+            ui->wid_homePageTop->setWord("通讯录");
         else if (index == 2)
-            ui->wid_homePageTop->setWord("Dynamic");
+            ui->wid_homePageTop->setWord("朋友圈");
         else{
             ui->wid_homePageTop->hide();
             if(wid_mine->getUserName() != userName){
@@ -170,8 +170,6 @@ void HomePage::onDownloadFile(QString filePath)
        && (recvSendFileSocket->state() != QTcpSocket::ConnectedState)){
         recvSendFileSocket->connectToHost("39.105.105.251", 5188);
     }
-
-
 }
 
 void HomePage::onInitFriendList(QMap<QString,QString> &map)

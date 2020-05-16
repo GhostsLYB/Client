@@ -64,6 +64,16 @@
         <property name="text">
          <string>&lt;</string>
         </property>
+        <property name="icon">
+         <iconset resource="res.qrc">
+          <normaloff>:/icon/app_icon/back.png</normaloff>:/icon/app_icon/back.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>50</width>
+          <height>50</height>
+         </size>
+        </property>
         <property name="autoRaise">
          <bool>true</bool>
         </property>
@@ -89,7 +99,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QListWidget" name="listWidget">
+    <widget class="CustomListWidget" name="listWidget">
      <property name="styleSheet">
       <string notr="true"/>
      </property>
@@ -157,8 +167,8 @@
           </property>
           <property name="iconSize">
            <size>
-            <width>20</width>
-            <height>20</height>
+            <width>50</width>
+            <height>50</height>
            </size>
           </property>
           <property name="autoRaise">
@@ -176,13 +186,13 @@
           </property>
           <property name="styleSheet">
            <string notr="true">border-radius:4px;
-font: 24pt &quot;黑体&quot;;</string>
+font: 18pt &quot;黑体&quot;;</string>
           </property>
           <property name="html">
            <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'黑体'; font-size:24pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'黑体'; font-size:18pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'SimSun'; font-size:9pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
          </widget>
@@ -223,8 +233,8 @@ background-color: rgb(255, 255, 255);</string>
           </property>
           <property name="iconSize">
            <size>
-            <width>20</width>
-            <height>20</height>
+            <width>50</width>
+            <height>50</height>
            </size>
           </property>
           <property name="autoRaise">
@@ -249,8 +259,8 @@ background-color: rgb(255, 255, 255);</string>
           </property>
           <property name="iconSize">
            <size>
-            <width>20</width>
-            <height>20</height>
+            <width>50</width>
+            <height>50</height>
            </size>
           </property>
           <property name="autoRaise">
@@ -332,6 +342,12 @@ font: 75 9pt &quot;微软雅黑&quot;;</string>
          <iconset resource="res.qrc">
           <normaloff>:/icon/app_icon/ghost.png</normaloff>:/icon/app_icon/ghost.png</iconset>
         </property>
+        <property name="iconSize">
+         <size>
+          <width>50</width>
+          <height>50</height>
+         </size>
+        </property>
         <property name="autoRaise">
          <bool>true</bool>
         </property>
@@ -351,6 +367,12 @@ font: 75 9pt &quot;微软雅黑&quot;;</string>
         <property name="icon">
          <iconset resource="res.qrc">
           <normaloff>:/icon/app_icon/add.png</normaloff>:/icon/app_icon/add.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>50</width>
+          <height>50</height>
+         </size>
         </property>
         <property name="autoRaise">
          <bool>true</bool>
@@ -372,6 +394,12 @@ font: 75 9pt &quot;微软雅黑&quot;;</string>
          <iconset resource="res.qrc">
           <normaloff>:/icon/app_icon/voiceInput.png</normaloff>:/icon/app_icon/voiceInput.png</iconset>
         </property>
+        <property name="iconSize">
+         <size>
+          <width>50</width>
+          <height>50</height>
+         </size>
+        </property>
         <property name="autoRaise">
          <bool>true</bool>
         </property>
@@ -379,6 +407,10 @@ font: 75 9pt &quot;微软雅黑&quot;;</string>
       </item>
       <item>
        <widget class="QPushButton" name="btn_sendPicture">
+        <property name="styleSheet">
+         <string notr="true">border-radius:4px;
+border:1px solid;</string>
+        </property>
         <property name="text">
          <string>图片发送</string>
         </property>
@@ -399,6 +431,10 @@ font: 75 9pt &quot;微软雅黑&quot;;</string>
       </item>
       <item>
        <widget class="QPushButton" name="btn_sendFile">
+        <property name="styleSheet">
+         <string notr="true">border-radius:4px;
+border:1px solid;</string>
+        </property>
         <property name="text">
          <string>文件发送</string>
         </property>
@@ -427,6 +463,11 @@ font: 75 9pt &quot;微软雅黑&quot;;</string>
    <class>SoundRecordButton</class>
    <extends>QToolButton</extends>
    <header location="global">customUI/soundrecordbutton.h</header>
+  </customwidget>
+  <customwidget>
+   <class>CustomListWidget</class>
+   <extends>QListWidget</extends>
+   <header location="global">customlistwidget.h</header>
   </customwidget>
  </customwidgets>
  <resources>

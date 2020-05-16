@@ -2,7 +2,7 @@
 #include "ui_widgetmain.h"
 #include <QDebug>
 
-#define RECENT_CHAT_ITEM_HEIGHT 120
+#define RECENT_CHAT_ITEM_HEIGHT 150
 
 WidgetMain::WidgetMain(QWidget *parent) :
     QWidget(parent),
@@ -10,7 +10,7 @@ WidgetMain::WidgetMain(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    listWidget = new QListWidget(this);
+    listWidget = new CustomListWidget(this);
     this->layout()->addWidget(listWidget);
 
     listWidget->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);

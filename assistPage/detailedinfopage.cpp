@@ -31,7 +31,7 @@ DetailedInfoPage::DetailedInfoPage(Control *ctrl, SqliteControl *sqlite, QWidget
     lbtn_userName->setBtnInfoIcon("");
     lbtn_number = new LongButton(ui->tab_allInfo);//趣聊号
     lbtn_number->setBtnNameIcon("");
-    lbtn_number->setBtnNameText("number");
+    lbtn_number->setBtnNameText("趣聊号");
     lbtn_number->setBtnInfoIcon("");
     lbtn_address = new LongButton(ui->tab_allInfo);//地址
     lbtn_address->setBtnNameIcon("");
@@ -39,7 +39,7 @@ DetailedInfoPage::DetailedInfoPage(Control *ctrl, SqliteControl *sqlite, QWidget
     lbtn_address->setBtnInfoIcon("");
     lbtn_personalSignature = new LongButton(ui->tab_allInfo);//个性签名
     lbtn_personalSignature->setBtnNameIcon("");
-    lbtn_personalSignature->setBtnNameText("signature");
+    lbtn_personalSignature->setBtnNameText("个性签名");
     lbtn_personalSignature->setBtnInfoIcon("");
     lbtn_phone = new LongButton(ui->tab_allInfo);//电话
     lbtn_phone->setBtnNameIcon("");
@@ -62,7 +62,10 @@ DetailedInfoPage::DetailedInfoPage(Control *ctrl, SqliteControl *sqlite, QWidget
     //modifyInfo page index = 1
 
     //setup page index = 2
-
+    connect(ui->cb_audio,&QCheckBox::stateChanged,[&](int state){
+        bool isChecked = (state == 2)?true:false;
+        GlobalDate::setIsMute(isChecked);
+    });
 }
 
 void DetailedInfoPage::setCurrentPage(int index, QString userName, bool isReFresh)
@@ -159,8 +162,8 @@ void DetailedInfoPage::onToModifyPage(QString btnNameText)
         modifyInfo = mineData[0];
         modifyTip = "Change to a nice and domineering name";
     }
-    else if(btnNameText == "number"){
-        modifyPageTitle = "Set Number";
+    else if(btnNameText == "趣聊号"){
+        modifyPageTitle = "设置趣聊号";
         modifyInfo = mineData[1];
         modifyTip = "只能设置一次，且唯一";
     }
@@ -169,7 +172,7 @@ void DetailedInfoPage::onToModifyPage(QString btnNameText)
         modifyInfo = mineData[4];
         modifyTip = "告诉我你是哪里人";
     }
-    else if(btnNameText == "signature"){
+    else if(btnNameText == "个性签名"){
         modifyPageTitle = "更改签名";
         modifyInfo = mineData[3];
         modifyTip = "Change my mood";
@@ -214,7 +217,7 @@ void DetailedInfoPage::on_btn_save_clicked()
         currUserName = le_infoInput->text();
         modifyFlag = 1;
     }
-    else if(title == "Set Number"){
+    else if(title == "设置趣聊号"){
         modifyField = "number";
         modifyFlag = 2;
     }

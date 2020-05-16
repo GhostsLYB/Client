@@ -8,6 +8,7 @@
 
 #include "customUI/friendlistitem.h"
 #include "../globaldate.h"
+#include "../customUI/customlistwidget.h"
 
 namespace Ui {
 class WidgetFriend;
@@ -30,7 +31,7 @@ private slots:
 
 private:
     Ui::WidgetFriend *ui;
-    QListWidget * listWidget = nullptr;
+    CustomListWidget * listWidget = nullptr;
 };
 
 #endif // WIDGETFRIEND_H

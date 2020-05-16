@@ -7,6 +7,7 @@
 #include <QListWidget>
 #include "customUI/homepagetop.h"
 #include "customUI/customlistwidgetitem.h"
+#include "../customUI/customlistwidget.h"
 
 namespace Ui {
 class WidgetMain;
@@ -32,7 +33,7 @@ public slots:
 
 private:
     Ui::WidgetMain *ui;
-    QListWidget * listWidget = nullptr;
+    CustomListWidget * listWidget = nullptr;
 };
 
 #endif // WIDGETMAIN_H

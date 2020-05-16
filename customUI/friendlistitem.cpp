@@ -13,7 +13,7 @@ FriendListItem::FriendListItem(QWidget *parent) :
 void FriendListItem::setPicture(QString path){
     QPixmap pix(80,80);
     pix.load(path);
-    pix.scaled(QSize(80, 80));
+    pix.scaled(QSize(100, 100));
     lb_image->clear();
     lb_image->setPixmap(pix);
 }

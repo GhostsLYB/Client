@@ -23,6 +23,7 @@ CustomListWidgetItem::CustomListWidgetItem(QWidget *parent,QString image,QString
     lb_voiceIcon->setAttribute(Qt::WA_TransparentForMouseEvents,true);
     if(image != ""){
         QPixmap pix(image);
+        pix.scaled(100,100);
         lb_image->setPixmap(pix);
     }
     if(newMsgNum != ""){

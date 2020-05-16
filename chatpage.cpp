@@ -128,6 +128,17 @@ void ChatPage::onSend(int msgFlag)
 //处理来自其他人的消息 msg格式：对方用户名长度+对方用户名+消息长度+消息
 void ChatPage::onRecvMessage(QString msg, int flag)
 {
+    //接受到消息后播放声音
+    if(GlobalDate::getIsMutex() && flag == 3){
+        qDebug() << "$$$$$$$$$$$ palyer audio $$$$$$$$$$";
+        QMediaPlayer * player = new QMediaPlayer;
+        player->setMedia(QUrl::fromLocalFile(chatPagePath+"msgAudio.mp3"));
+        player->setVolume(100);
+        player->play();
+    }
+    else {
+        qDebug() << "$$$$$$$$$$$ audio close $$$$$$$$$$";
+    }
     //msg文字格式："   4root   9你好吗"
     //语音格式："   4root   8filePath"
     QByteArray bta = msg.toUtf8();
@@ -208,7 +219,7 @@ void ChatPage::addToListWidget(const QString &name,const int &flag,const QString
         return;
     }
     itemWidget = new TextChatInfoItem(listWidget,mImagePath,msg,isSend,flag);
-    item->setSizeHint(QSize(0,itemWidget->getHeight()+14));
+    item->setSizeHint(QSize(0,itemWidget->getHeight()+30));
     if(flag == 7 || flag == 8 || flag == 9)
     {
         itemWidget->setFilePath(wordOfUrl);
@@ -254,6 +265,7 @@ void ChatPage::on_btn_voiceSend_clicked()//改为录音输入，发送语音格�
         te_sendBox->hide();
         btn_send->hide();
         btn_otherSend->show();
+        btn_voiceSend->setIcon(QIcon(":/icon/app_icon/keyboard.png"));
     }
     else {
         btn_soundRecord->hide();  //录音按钮隐藏表示是即将发送的消息为文字消息
@@ -267,6 +279,7 @@ void ChatPage::on_btn_voiceSend_clicked()//改为录音输入，发送语音格�
             btn_otherSend->show();
             btn_send->hide();
         }
+        btn_voiceSend->setIcon(QIcon(":/icon/app_icon/voiceInput.png"));
     }
 }
 

@@ -5,6 +5,9 @@ QMap<QString,QString> GlobalDate::userImageUrlMap = QMap<QString,QString>();
 QMap<QString,QString> GlobalDate::friendNameImageMap = QMap<QString,QString>();
 QString GlobalDate::globalFilePath = "/storage/emulated/0/IM/file/";
 
+bool GlobalDate::isMute = true;
+
+
 GlobalDate::GlobalDate(QObject *parent) : QObject(parent)
 {
 

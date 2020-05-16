@@ -28,6 +28,7 @@ SOURCES += \
         allpagelistwidget.cpp \
         assistPage/detailedinfopage.cpp \
         chatpage.cpp \
+        customUI/customlistwidget.cpp \
         customUI/customlistwidgetitem.cpp \
         customUI/customtextedit.cpp \
         customUI/friendlistitem.cpp \
@@ -53,6 +54,7 @@ HEADERS += \
         allpagelistwidget.h \
         assistPage/detailedinfopage.h \
         chatpage.h \
+        customUI/customlistwidget.h \
         customUI/customlistwidgetitem.h \
         customUI/customtextedit.h \
         customUI/friendlistitem.h \

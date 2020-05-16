@@ -11,12 +11,13 @@
 #include <QSpacerItem>
 #include <QList>
 #include <QFileDialog>
+#include <QCheckBox>
 
 #include "socket/control.h"
 #include "socket/socketcontrol.h"
 #include "database/sqlitecontrol.h"
 #include "customUI/longbutton.h"
-
+#include "../globaldate.h"
 namespace Ui {
 class DetailedInfoPage;
 }

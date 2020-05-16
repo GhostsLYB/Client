@@ -36,6 +36,9 @@
      </property>
      <item>
       <widget class="QLabel" name="lb_image">
+       <property name="styleSheet">
+        <string notr="true">margin-top:10px;margin-left:5px;</string>
+       </property>
        <property name="text">
         <string>好友头像</string>
        </property>
@@ -43,6 +46,10 @@
      </item>
      <item>
       <widget class="QLabel" name="lb_friendName">
+       <property name="styleSheet">
+        <string notr="true">margin-left:10px;
+font: 75 20pt &quot;Agency FB&quot;;</string>
+       </property>
        <property name="text">
         <string>好友名称</string>
        </property>

@@ -31,6 +31,9 @@
    </property>
    <item>
     <widget class="QLabel" name="lb_image">
+     <property name="styleSheet">
+      <string notr="true">margin-top:25px;</string>
+     </property>
      <property name="text">
       <string>image</string>
      </property>
@@ -52,6 +55,9 @@
        </item>
        <item>
         <widget class="QLabel" name="lb_friendName">
+         <property name="styleSheet">
+          <string notr="true">font: 75 20pt &quot;Agency FB&quot;;</string>
+         </property>
          <property name="text">
           <string>userName</string>
          </property>
@@ -59,6 +65,9 @@
        </item>
        <item>
         <widget class="QLabel" name="lb_lastTime">
+         <property name="styleSheet">
+          <string notr="true">font: 16pt &quot;Agency FB&quot;;</string>
+         </property>
          <property name="text">
           <string>lastTime</string>
          </property>
@@ -70,6 +79,10 @@
       <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="20,2">
        <item>
         <widget class="QLabel" name="lb_lastMsg">
+         <property name="styleSheet">
+          <string notr="true">margin-left:20px;
+font: 16pt &quot;Agency FB&quot;;</string>
+         </property>
          <property name="text">
           <string>lastMsg</string>
          </property>

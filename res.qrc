@@ -10,7 +10,16 @@
         <file>icon/app_icon/ghost.png</file>
         <file>icon/app_icon/pause.png</file>
         <file>icon/app_icon/start.png</file>
-        <file>icon/app_icon/threePoint.png</file>
         <file>icon/app_icon/voiceInput.png</file>
+        <file>icon/app_icon/back.png</file>
+        <file>icon/app_icon/dynamic.png</file>
+        <file>icon/app_icon/friend.png</file>
+        <file>icon/app_icon/keyboard.png</file>
+        <file>icon/app_icon/mine.png</file>
+        <file>icon/app_icon/msg.png</file>
+        <file>icon/app_icon/setup.png</file>
+        <file>icon/app_icon/voiceClose.png</file>
+        <file>icon/app_icon/voiceOpen.png</file>
+        <file>icon/msgAudio.mp3</file>
     </qresource>
 </RCC>

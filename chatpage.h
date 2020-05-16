@@ -14,6 +14,7 @@
 #include "database/sqlitecontrol.h"
 #include "customUI/textchatinfoitem.h"
 #include "customUI/soundrecordbutton.h"
+#include "customUI/customlistwidget.h"
 #include "globaldate.h"
 
 namespace Ui {

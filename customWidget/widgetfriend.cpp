@@ -1,7 +1,7 @@
 #include "widgetfriend.h"
 #include "ui_widgetfriend.h"
 
-#define FRIEND_ITEM_HEIGHT 100
+#define FRIEND_ITEM_HEIGHT 120
 
 WidgetFriend::WidgetFriend(QWidget *parent) :
     QWidget(parent),
@@ -9,7 +9,7 @@ WidgetFriend::WidgetFriend(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    listWidget = new QListWidget(this);
+    listWidget = new CustomListWidget(this);
     this->layout()->addWidget(listWidget);
 
 

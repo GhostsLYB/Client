@@ -13,7 +13,7 @@ TextChatInfoItem::TextChatInfoItem(QWidget *parent,QString imagePath,
 
     imageLayout = new QVBoxLayout(this);
     lb_image = ui->lb_image;
-    lb_image->setFixedSize(QSize(48,48));
+    lb_image->setFixedSize(QSize(100,100));
     lb_image->setAttribute(Qt::WA_TransparentForMouseEvents, true);
     imageLayout->addWidget(lb_image);
     imageLayout->setMargin(0);
@@ -24,12 +24,29 @@ TextChatInfoItem::TextChatInfoItem(QWidget *parent,QString imagePath,
     te_info->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     te_info->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     te_info->setAttribute(Qt::WA_TransparentForMouseEvents, true);
+    te_info->setFixedWidth(600);
+    //布局
+    QSpacerItem *spacerItem = new QSpacerItem(20,20,QSizePolicy::Expanding,QSizePolicy::Minimum);
+    if(isSend){ //发送信息       //设置布局
+        layout->addSpacerItem(spacerItem);
+        layout->addLayout(infoLayout);
+        layout->addLayout(imageLayout);
+//        setLayoutDirection(Qt::RightToLeft);
+    }
+    else {      //接收信息s
+        layout->addLayout(imageLayout);
+        layout->addLayout(infoLayout);
+        layout->addSpacerItem(spacerItem);
+//        setLayoutDirection(Qt::LeftToRight);
+    }
+    this->setLayout(layout);
+    layout->setMargin(0);
+    layout->setSpacing(0);
     //自适应高度
     connect(te_info->document(),&QTextDocument::contentsChanged,
             this,&TextChatInfoItem::onContentsChanged);
     infoLayout->addWidget(te_info);
     infoLayout->setMargin(8);
-    QSpacerItem *spacerItem = new QSpacerItem(20,20,QSizePolicy::Expanding,QSizePolicy::Minimum);
     QPixmap pix;
     if(imagePath != "")
         pix.load(imagePath);
@@ -37,28 +54,6 @@ TextChatInfoItem::TextChatInfoItem(QWidget *parent,QString imagePath,
         pix.load(":/icon/head_picture/2.png");
     lb_image->setPixmap(pix);   //设置头像
     te_info->append(info);      //设置信息
-//    te_info->setFixedSize(QSize(200,130));
-    if(flag == 8){ //图片
-//        te_info->setFixedSize(QSize(200,300));
-    }
-    if(flag == 9){ //文件
-//        te_info->setFixedSize(QSize(200,130));
-    }
-    if(isSend){ //发送信息       //设置布局
-        layout->addSpacerItem(spacerItem);
-        layout->addLayout(infoLayout);
-        layout->addLayout(imageLayout);
-    }
-    else {      //接收信息s
-        layout->addLayout(imageLayout);
-        layout->addLayout(infoLayout);
-        layout->addSpacerItem(spacerItem);
-    }
-    this->setLayout(layout);
-    layout->setMargin(0);
-    layout->setSpacing(0);
-
-
 }
 
 int TextChatInfoItem::getHeight()
@@ -73,14 +68,14 @@ void TextChatInfoItem::onContentsChanged()
     if(document){
         QTextEdit *editor=qobject_cast<QTextEdit*>(document->parent()->parent());
         if (editor){
-            int newHeight = document->size().rheight() + 6;
+            int newHeight = document->size().rheight() + 14;
             if (newHeight != editor->height()){
                 editor->setFixedHeight(newHeight);
             }
-            int newWidth = document->size().rwidth() + 6;
+            int newWidth = document->size().rwidth() + 14;
             if (newWidth != editor->width()){
                 qDebug() << "height:" << newHeight << " width:" << newWidth;
-                editor->setFixedWidth(300);
+                editor->setFixedWidth(newWidth);
             }
         }
     }
@@ -93,9 +88,8 @@ void TextChatInfoItem::mouseReleaseEvent(QMouseEvent *)
         if(QFile::exists(filePath)){
             QMediaPlayer * player = new QMediaPlayer;
             player->setMedia(QUrl::fromLocalFile(filePath));
-            player->setVolume(50);
+            player->setVolume(100);
             player->play();
-//            QSound::play(filePath);
         }
             else {
             QString fileName = filePath.mid(filePath.lastIndexOf('/')+1);
