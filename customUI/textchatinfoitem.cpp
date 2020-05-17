@@ -13,7 +13,7 @@ TextChatInfoItem::TextChatInfoItem(QWidget *parent,QString imagePath,
 
     imageLayout = new QVBoxLayout(this);
     lb_image = ui->lb_image;
-    lb_image->setFixedSize(QSize(100,100));
+    lb_image->setFixedSize(QSize(60,60));
     lb_image->setAttribute(Qt::WA_TransparentForMouseEvents, true);
     imageLayout->addWidget(lb_image);
     imageLayout->setMargin(0);
@@ -52,6 +52,7 @@ TextChatInfoItem::TextChatInfoItem(QWidget *parent,QString imagePath,
         pix.load(imagePath);
     else
         pix.load(":/icon/head_picture/2.png");
+    pix = pix.scaled(60,60);
     lb_image->setPixmap(pix);   //设置头像
     te_info->append(info);      //设置信息
 }
@@ -68,15 +69,17 @@ void TextChatInfoItem::onContentsChanged()
     if(document){
         QTextEdit *editor=qobject_cast<QTextEdit*>(document->parent()->parent());
         if (editor){
-            int newHeight = document->size().rheight() + 14;
+            int newHeight = document->size().rheight() + 6;
             if (newHeight != editor->height()){
                 editor->setFixedHeight(newHeight);
             }
-            int newWidth = document->size().rwidth() + 14;
-            if (newWidth != editor->width()){
-                qDebug() << "height:" << newHeight << " width:" << newWidth;
-                editor->setFixedWidth(newWidth);
-            }
+            editor->setFixedWidth(document->size().width()+100);
+
+//            int newWidth = document->size().rwidth() + 14;
+//            if (newWidth != editor->width()){
+//                qDebug() << "height:" << newHeight << " width:" << newWidth;
+//                editor->setFixedWidth(newWidth);
+//            }
         }
     }
 }

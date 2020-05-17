@@ -57,7 +57,7 @@ DetailedInfoPage::DetailedInfoPage(Control *ctrl, SqliteControl *sqlite, QWidget
     layout->addWidget(lbtn_address);
     layout->addWidget(lbtn_personalSignature);
     layout->addWidget(lbtn_phone);
-    QSpacerItem * spacer = new QSpacerItem(20,150);
+    QSpacerItem * spacer = new QSpacerItem(20,600);
     layout->addSpacerItem(spacer);
     //modifyInfo page index = 1
 
@@ -98,7 +98,7 @@ void DetailedInfoPage::initAllInfoPage()
 {
     //mineData: userName number imagepath person address time
     if(mineData.size() != 0){
-        lbtn_image->setBtnInfoIconSize(QSize(50,50));
+        lbtn_image->setBtnInfoIconSize(QSize(100,100));
         if(mineData[2] != "")
             lbtn_image->setBtnInfoIcon(mineData[2]);
         lbtn_userName->setBtnInfoText(mineData[0]+" >");
@@ -160,7 +160,7 @@ void DetailedInfoPage::onToModifyPage(QString btnNameText)
     else if(btnNameText == "昵称"){
         modifyPageTitle = "更改名字";
         modifyInfo = mineData[0];
-        modifyTip = "Change to a nice and domineering name";
+        modifyTip = "改一个让别人能记住你的名字！";
     }
     else if(btnNameText == "趣聊号"){
         modifyPageTitle = "设置趣聊号";
@@ -175,7 +175,7 @@ void DetailedInfoPage::onToModifyPage(QString btnNameText)
     else if(btnNameText == "个性签名"){
         modifyPageTitle = "更改签名";
         modifyInfo = mineData[3];
-        modifyTip = "Change my mood";
+        modifyTip = "换一种心情，换一个签名。";
     }else if (btnNameText == "电话") {
         modifyPageTitle = "更改电话";
         modifyInfo = mineData[8];

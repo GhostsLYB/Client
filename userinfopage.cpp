@@ -82,6 +82,7 @@ void UserInfoPage::setUserInfo(QList<QString> &data)
     else {
         pix.load(data[2]);
     }
+    pix = pix.scaled(200,200);
     lb_image->setPixmap(pix);
     lb_userName->setText(perUserName+data[0]);
     lb_number->setText(perNumber+data[1]);

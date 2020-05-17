@@ -58,6 +58,16 @@
         <property name="text">
          <string>&lt;</string>
         </property>
+        <property name="icon">
+         <iconset resource="../res.qrc">
+          <normaloff>:/icon/app_icon/back.png</normaloff>:/icon/app_icon/back.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>50</width>
+          <height>50</height>
+         </size>
+        </property>
         <property name="autoRepeat">
          <bool>false</bool>
         </property>
@@ -220,11 +230,23 @@ color: rgb(209, 209, 209);</string>
       <attribute name="title">
        <string>setup</string>
       </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_4">
+      <layout class="QVBoxLayout" name="verticalLayout_4" stretch="1,8">
+       <property name="leftMargin">
+        <number>10</number>
+       </property>
+       <property name="topMargin">
+        <number>20</number>
+       </property>
        <item>
         <widget class="QCheckBox" name="cb_audio">
+         <property name="styleSheet">
+          <string notr="true">font: 75 16pt &quot;Agency FB&quot;;</string>
+         </property>
          <property name="text">
           <string>消息提示音</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
          </property>
         </widget>
        </item>
@@ -247,6 +269,8 @@ color: rgb(209, 209, 209);</string>
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="../res.qrc"/>
+ </resources>
  <connections/>
 </ui>

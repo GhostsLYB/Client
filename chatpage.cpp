@@ -129,7 +129,7 @@ void ChatPage::onSend(int msgFlag)
 void ChatPage::onRecvMessage(QString msg, int flag)
 {
     //接受到消息后播放声音
-    if(GlobalDate::getIsMutex() && flag == 3){
+    if(GlobalDate::getIsMutex() && (flag == 3 || flag == 7 || flag == 8 || flag == 9)){
         qDebug() << "$$$$$$$$$$$ palyer audio $$$$$$$$$$";
         QMediaPlayer * player = new QMediaPlayer;
         player->setMedia(QUrl::fromLocalFile(chatPagePath+"msgAudio.mp3"));

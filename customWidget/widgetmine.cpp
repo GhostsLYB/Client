@@ -27,7 +27,7 @@ void WidgetMine::setUserInfo(QList<QString> &data)
     }
     QPixmap pix;
     pix.load(imagePath);
-    pix.scaled(200,200);
+    pix = pix.scaled(200,200);
     lb_image->setPixmap(pix);
 }
 

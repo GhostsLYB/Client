@@ -467,7 +467,7 @@ border:1px solid;</string>
   <customwidget>
    <class>CustomListWidget</class>
    <extends>QListWidget</extends>
-   <header location="global">customlistwidget.h</header>
+   <header location="global">customUI/customlistwidget.h</header>
   </customwidget>
  </customwidgets>
  <resources>
